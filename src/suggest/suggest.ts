@@ -51,7 +51,7 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
         const line = editor.getLine(cursor.line);
         const match = this.testAndReturnQuery(line, cursor);
         if (!match) return null;
-        const [_, query] = match;
+        const [_, prefix, query] = match;
 
         if (
             Object.keys(this.plugin.admonitions).find(
@@ -64,13 +64,12 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
         return {
             end: cursor,
             start: {
-                ch: match.index + this.offset,
+                ch: match.index + prefix.length,
                 line: cursor.line
             },
             query
         };
     }
-    abstract offset: number;
     abstract selectSuggestion(
         value: [string, Admonition],
         evt: MouseEvent | KeyboardEvent
@@ -82,34 +81,35 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
 }
 
 export class CalloutSuggest extends AdmonitionOrCalloutSuggester {
-    offset = 4;
     selectSuggestion(
         [text]: [text: string, item: Admonition],
         evt: MouseEvent | KeyboardEvent
     ): void {
         if (!this.context) return;
 
-        const line = this.context.editor
-            .getLine(this.context.end.line)
-            .slice(this.context.end.ch);
+        const { editor, query, start, end } = this.context;
+
+        const line = editor
+            .getLine(end.line)
+            .slice(end.ch);
         const [_, exists] = line.match(/^(\] ?)/) ?? [];
 
-        this.context.editor.replaceRange(
+        editor.replaceRange(
             `${text}] `,
-            this.context.start,
+            start,
             {
-                ...this.context.end,
+                ...end,
                 ch:
-                    this.context.start.ch +
-                    this.context.query.length +
+                    start.ch +
+                    query.length +
                     (exists?.length ?? 0)
             },
             "admonitions"
         );
 
-        this.context.editor.setCursor(
-            this.context.start.line,
-            this.context.start.ch + text.length + 2
+        editor.setCursor(
+            start.line,
+            start.ch + text.length + 2
         );
 
         this.close();
@@ -119,23 +119,31 @@ export class CalloutSuggest extends AdmonitionOrCalloutSuggester {
         cursor: EditorPosition
     ): RegExpMatchArray | null {
         if (/> ?\[!\w+\]/.test(line.slice(0, cursor.ch))) return null;
-        if (!/> ?\[!\w*/.test(line)) return null;
-        return line.match(/> ?\[!(\w*)\]?/);
+        
+        const match = line.match(/(> ?\[!)(\w*)\]?/);
+        if (!match) return null;
+        return match
     }
 }
 export class AdmonitionSuggest extends AdmonitionOrCalloutSuggester {
-    offset = 6;
     selectSuggestion(
         [text]: [text: string, item: Admonition],
         evt: MouseEvent | KeyboardEvent
     ): void {
         if (!this.context) return;
 
-        this.context.editor.replaceRange(
+        const { editor, start, end } = this.context;
+
+        editor.replaceRange(
             `${text}`,
-            this.context.start,
-            this.context.end,
+            start,
+            end,
             "admonitions"
+        );
+
+        editor.setCursor(
+            start.line,
+            start.ch + text.length
         );
 
         this.close();
@@ -145,6 +153,9 @@ export class AdmonitionSuggest extends AdmonitionOrCalloutSuggester {
         cursor: EditorPosition
     ): RegExpMatchArray | null {
         if (!/```ad-\w*/.test(line)) return null;
-        return line.match(/```ad-(\w*)/);
+        
+        const match = line.match(/(```ad-)(\w*)/);
+        if (!match) return null;
+        return match;
     }
 }
