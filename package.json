@@ -29,7 +29,7 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.1",
         "@popperjs/core": "^2.9.2",
         "@primer/octicons": "^16.3.1",
-        "@types/node": "^14.14.2",
+        "@types/node": "^25.3.0",
         "@types/object.fromentries": "^2.0.0",
         "auto-changelog": "^2.5.0",
         "builtin-modules": "^3.3.0",
