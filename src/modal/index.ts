@@ -9,7 +9,7 @@ import {
     setIcon
 } from "obsidian";
 
-import { FuzzyInputSuggest } from "@javalent/utilities";
+import { FuzzyInputSuggest } from "./suggester";
 
 import { Admonition, AdmonitionIconDefinition } from "src/@types";
 import ObsidianAdmonition from "src/main";
