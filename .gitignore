@@ -9,7 +9,7 @@ workspace.code-workspace
 node_modules
 
 # build
-main.js
+build/
 *.js.map
 .DS_Store
 *build.js
@@ -20,3 +20,5 @@ webpack.dev.js
 generated/*
 .env
 *.map
+.claude/settings.local.json
+.claude/worktrees

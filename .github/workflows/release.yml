@@ -1,0 +1,129 @@
+name: Release Obsidian Plugin
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New version or major, minor, patch'
+        default: 'patch'
+        required: true
+      update_manifest:
+        description: 'Update manifest.json'
+        default: true
+        required: true
+        type: boolean
+      update_brat:
+        description: 'Update brat manifest'
+        default: true
+        required: true
+        type: boolean
+      retry:
+        description: "Retry release (clear created tag)"
+        default: false
+        required: true
+        type: boolean
+
+env:
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+
+jobs:
+  build:
+    permissions:
+      contents: write
+      actions: write
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.build.outputs.version }}
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+
+    - name: Use Node.js
+      uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    # Build the plugin
+    - name: Build and Tag
+      id: build
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo "version: ${{ github.event.inputs.version }}"
+        echo "retry: ${{ github.event.inputs.retry }}"
+        echo "update_manifest: ${{ github.event.inputs.update_manifest }}"
+        echo "update_brat: ${{ github.event.inputs.update_brat }}"
+
+        git config user.name "${{ env.GH_BOT_NAME }}"
+        git config user.email "${{ env.GH_BOT_EMAIL }}"
+
+        npm ci
+        if [[ "${{ github.event.inputs.retry }}" = "true" ]]; then
+          npm run preversion
+        else
+          npm version "${{ github.event.inputs.version }}" --no-git-tag-version
+        fi
+        VERSION=$(node -p "require('./package.json').version")
+        echo "$VERSION"
+
+        if git rev-parse "refs/tags/$VERSION" > /dev/null 2>&1; then
+          if [[ "${{ github.event.inputs.retry }}" = "true" ]]; then
+            gh release delete "$VERSION" --cleanup-tag --yes
+          else
+            echo "🛑 Tag $VERSION already exists"
+            exit 1
+          fi
+        fi
+
+        if [ "${{ github.event.inputs.update_manifest }}" = "true" ]; then
+          sed -i "s|\"version\": \"[0-9.]*\"|\"version\": \"${VERSION}\"|" manifest.json
+        fi
+        if [ "${{ github.event.inputs.update_brat }}" = "true" ]; then
+          sed -i "s|\"version\": \"[0-9.]*\"|\"version\": \"${VERSION}\"|" manifest-beta.json
+        fi
+
+        git add .
+        git status
+        git commit -m "🔖 $VERSION"
+        git push
+
+        git tag "$VERSION"
+        git push --tags
+
+        npm run brat-notes -- "${VERSION}"
+        echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+    # Package the required files into a zip
+    - name: Package
+      run: |
+        mkdir ${{ github.event.repository.name }}
+        cp ./build/* ${{ github.event.repository.name }}
+        zip -r ${{ github.event.repository.name }}-${{ steps.build.outputs.version }}.zip ${{ github.event.repository.name }}
+
+    # Create the release on github
+    - name: Create Release
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        prerelease=true
+        if [[ "${{ github.event.inputs.update_manifest }}" == "true" ]]; then
+            prerelease=false
+        fi
+
+        gh release create "${{ steps.build.outputs.version }}" \
+            -F ./release-notes.md \
+            --title "Release ${{ steps.build.outputs.version }}" \
+            --verify-tag \
+            --prerelease=${prerelease}
+
+        gh release upload "${{ steps.build.outputs.version }}" --clobber \
+            ${{ github.event.repository.name }}-${{ steps.build.outputs.version }}.zip \
+            './build/main.js#main.js' \
+            './build/styles.css#styles.css' \
+            './manifest.json' \
+            './manifest-beta.json'

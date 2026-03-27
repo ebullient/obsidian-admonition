@@ -1,0 +1,37 @@
+{{#each releases}}
+  {{#if href}}
+    ###{{#unless major}}#{{/unless}} [{{title}}]({{href}})
+  {{else}}
+    #### {{title}}
+  {{/if}}
+
+  {{#if tag}}
+    > {{niceDate}}
+  {{/if}}
+
+  {{#if summary}}
+    {{summary}}
+  {{/if}}
+
+  {{#if fixes}}
+  Fixes:
+  {{#each fixes}}
+    - {{#if commit.breaking}}**Breaking change:** {{/if}}{{commit.subject}} {{#each fixes}}#{{id}} {{/each}}
+  {{/each}}
+  {{/if}}
+
+  {{#if commits}}
+  Commits:
+  {{#each commits}}
+    - {{#if breaking}}**Breaking change:** {{/if}}{{subject}}{{#if href}} [`{{shorthash}}`]({{href}}){{/if}}
+  {{/each}}
+  {{/if}}
+
+  {{#if merges}}
+  PRs:
+  {{#each merges}}
+    - #{{id}} {{#if commit.breaking}}**Breaking change:** {{/if}}{{message}}
+  {{/each}}
+  {{/if}}
+
+{{/each}}
