@@ -35,18 +35,16 @@ By default, the background colour of the title is the **colour of the admonition
 
 ### Images as Icons
 
-Instead of using an icon from a downloaded icon set (see the [Icon](options.md#icon) section), you can upload an image to use as an admonition icon. The uploaded image will be resized to 24px × 24px to fit the plugin's saved data.
+Instead of using an icon from a downloaded icon set (see the [Icon](options.md#icon) section), you can upload an image to use as an admonition icon. The uploaded image is stored at 24×24 resolution in the plugin's settings.
 
 To remove an uploaded image icon, choose an icon from the icon chooser text box.
 
-### Icon Packs
+### Contributing an Icon Pack
 
-The Admonitions plugin allows you to download and add additional icon packs through the settings.
-
-To add a new icon pack:
+The following steps are for **plugin contributors** who want to add a new icon pack to the codebase and submit it via pull request:
 
 1. Create a new folder in the `icons` directory with the name of your icon set.
 2. Inside the newly created folder, add an `icons.json` file that defines the icons as an object. Refer to the `Octicons json` file in the `icons/octicons/` folder for guidance.
 3. In the `Icon Packs` file in the `src/icons/` directory, update the two variables with your icon pack's information.
 
-You can contribute to Admonitions by making a pull request with your icon pack.
+Submit your icon pack as a pull request.

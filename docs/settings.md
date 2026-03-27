@@ -18,48 +18,11 @@ This option opens a modal window where you can create a new admonition. A visual
 
 Once created, all admonitions can be used as [Obsidian callouts](https://help.obsidian.md/Editing+and+formatting/Callouts).
 
+Each admonition in the list also has a **Register Commands** button. Clicking it registers three Command Palette commands for that type — see [Commands](commands.md#admonition-specific-commands) for details.
+
 ### Importing Custom Admonitions
 
-A visual guide for importing is available at [Import an Admonition](import.md).
-
-Admonitions can be imported from a JSON array of definitions. The minimum requirement for a valid admonition type is a specified `"type"` field:
-
-```json
-[
-    {
-        "type": "my-custom-type"
-    }
-]
-```
-
-When `"icon"` and `"color"` fields are not specified, a random color will be assigned and the `pencil-alt` FontAwesome icon will be used. You can also specify both fields:
-
-```json
-[
-    {
-        "type": "my-custom-type",
-        "icon": "globe",
-        "color": "120,120,120"
-    }
-]
-```
-
-To specify an icon pack explicitly:
-
-```json
-[
-    {
-        "type": "my-custom-type",
-        "icon": {
-            "name": "globe",
-            "type": "font-awesome"
-        },
-        "color": "120,120,120"
-    }
-]
-```
-
-See the [JSON Specification](advanced/json-spec.md) for all possible fields.
+Imports admonitions from a JSON file. See [Import an Admonition](import.md) for a step-by-step guide and JSON format examples, and [JSON Specification](advanced/json-spec.md) for the full field reference.
 
 ## Admonitions & Callouts Settings
 
@@ -90,4 +53,7 @@ When enabled, the plugin attempts to synchronize links to the metadata cache so 
 
 ### Generate JS for Publish
 
-Generates the necessary JavaScript code to use Admonitions on custom-domain Obsidian Publish websites. See [Publish.js with Admonitions](advanced/publish.md) for more information.
+> [!CAUTION]
+> This feature was removed in v10.0.0. Use native Obsidian callouts (`> [!type]`) instead.
+
+Generates JavaScript for use on custom-domain Obsidian Publish websites. See [Publish.js with Admonitions](advanced/publish.md) for historical details.

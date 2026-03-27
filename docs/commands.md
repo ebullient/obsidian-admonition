@@ -12,21 +12,23 @@ This command opens a modal window to set the type, title, and collapse behavior 
 
 ## Admonition-Specific Commands
 
-Custom commands can be registered for each custom admonition type by clicking the **Register Commands** button in [Settings](settings.md).
+Custom commands can be registered for each custom admonition type by clicking the **Register Commands** button next to the type in the Admonitions settings list.
 
 Three commands will be registered for each type: `Insert <type> Callout`, `Insert <type>`, and `Insert <type> with Title`.
 
+> **Callout vs. code block:** A *callout* uses Obsidian's native `> [!type]` blockquote syntax. A *code block admonition* uses the plugin's `` ```ad-type `` syntax. Both render visually the same; callouts are the simpler modern form, while code blocks support additional parameters like `icon:` and `color:`.
+
 ### Insert Callout
 
-Inserts the selected type as an Obsidian callout, along with any selected text.
+Inserts the selected type as an Obsidian callout (`> [!type]`), prepopulated with any text you had selected in the editor.
 
 ### Insert
 
-Inserts the selected type as a code block admonition, along with any selected text.
+Inserts the selected type as a code block admonition (`` ```ad-type ``), prepopulated with any text you had selected.
 
 ### Insert with Title
 
-Inserts the selected type as a code block admonition with a `title:` parameter, along with any selected text. The cursor will be placed on the title line.
+Inserts the selected type as a code block admonition with a `title:` parameter. The cursor is placed on the title line so you can type it immediately.
 
 ## Mermaid Graphs
 

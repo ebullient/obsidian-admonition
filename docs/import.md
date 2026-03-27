@@ -8,6 +8,47 @@ To import an Admonition, you need an admonitions `.json` file.
 
 If you do not already have one, you can find some at both the [ObsidianTTRPGShare](https://github.com/Obsidian-TTRPG-Community/ObsidianTTRPGShare) and [TTRPG-CLI](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples) repositories.
 
+## JSON Format
+
+The file must be a JSON array of admonition definitions. The only required field is `"type"`:
+
+```json
+[
+    {
+        "type": "my-custom-type"
+    }
+]
+```
+
+When `"icon"` and `"color"` are not specified, a random color and the `pencil-alt` FontAwesome icon will be used. To set them explicitly:
+
+```json
+[
+    {
+        "type": "my-custom-type",
+        "icon": "globe",
+        "color": "120,120,120"
+    }
+]
+```
+
+To specify which icon pack the icon name comes from:
+
+```json
+[
+    {
+        "type": "my-custom-type",
+        "icon": {
+            "name": "globe",
+            "type": "font-awesome"
+        },
+        "color": "120,120,120"
+    }
+]
+```
+
+See the [JSON Specification](advanced/json-spec.md) for all available fields.
+
 ## Import Steps
 
 1. Open the Admonitions settings within Obsidian.
@@ -44,6 +85,4 @@ If you do not already have one, you can find some at both the [ObsidianTTRPGShar
 </details>
 
 > [!NOTE]
-> **Some assembly may be required.** Some Admonitions rely on styling CSS more than others — in such cases you should also grab the available CSS files. PF2E Admonitions are one such case.
->
-> You can bypass the coloration and color admonitions directly by editing each one to use the CSS color from the JSON file.
+> **Some assembly may be required.** Some community admonition packs (such as PF2E) rely heavily on custom CSS for their appearance. If imported admonitions look plain or unstyled, check whether the pack includes a CSS file and add it as an [Obsidian CSS snippet](https://help.obsidian.md/Extending+Obsidian/CSS+snippets).

@@ -17,9 +17,9 @@ Becomes:
 ## Options
 
 ````md
-```ad-<type> # Admonition type. See below for a list of available types.
-title:                  # Admonition title.
-collapse:               # Create a collapsible admonition.
+```ad-<type> # Admonition type — see types.md for the full list.
+title:                  # Admonition title (optional).
+collapse:               # open | closed | none
 icon:                   # Override the icon.
 color:                  # Override the color.
 
@@ -66,11 +66,15 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.
 
 ### Collapsible
 
-To create a collapsible admonition, add the `collapse` parameter to it.
+To create a collapsible admonition, add the `collapse` parameter. Valid values:
 
-Setting `collapse: open` will make the admonition open on render and collapsible on click.
+| Value | Behavior |
+|-------|----------|
+| `open` | Renders open; can be collapsed by clicking the title |
+| `closed` | Renders collapsed; can be expanded by clicking the title |
+| `none` | Forces the admonition to be non-collapsible, even if "Collapsible By Default" is enabled in settings |
 
-If the admonition's title is left blank, the `collapse` parameter will have no effect.
+If the admonition's title is left blank, the `collapse` parameter has no effect.
 
 You can set all admonitions to be collapsible by default in the [settings](settings.md).
 

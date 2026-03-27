@@ -41,4 +41,4 @@ The Admonitions plugin for [Obsidian](https://obsidian.md) adds block-styled con
 
 ## Community Reviews
 
-[▶ Video walkthrough on YouTube](https://www.youtube-nocookie.com/embed/TqYQ0kA1yAo)
+[▶ Video walkthrough on YouTube](https://www.youtube.com/watch?v=TqYQ0kA1yAo)

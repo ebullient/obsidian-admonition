@@ -7,7 +7,7 @@ The Admonitions plugin exposes a programmatic API that other plugins can use to 
 There is no separate API object — methods are accessed directly on the plugin instance:
 
 ```typescript
-const admonitions = this.app.plugins.plugins["obsidian-admonition"];
+const plugin = this.app.plugins.plugins["obsidian-admonition"];
 ```
 
 ## Admonition Management
@@ -17,7 +17,7 @@ const admonitions = this.app.plugins.plugins["obsidian-admonition"];
 Registers a new custom admonition type. Updates CSS and saves settings.
 
 ```typescript
-await admonitions.addAdmonition({
+await plugin.addAdmonition({
     type: "my-type",
     title: "My Type",
     icon: { type: "font-awesome", name: "star" },
@@ -34,7 +34,11 @@ await admonitions.addAdmonition({
 Removes a custom admonition type. Cleans up CSS and saves settings.
 
 ```typescript
-await admonitions.removeAdmonition(admonition);
+// Look up the admonition object first, then remove it
+const admonition = plugin.admonitions["my-type"];
+if (admonition) {
+    await plugin.removeAdmonition(admonition);
+}
 ```
 
 ### `admonitions: Record<string, Admonition>` (getter)
@@ -42,7 +46,7 @@ await admonitions.removeAdmonition(admonition);
 Returns all available admonition types — both built-in and user-defined — keyed by type name.
 
 ```typescript
-const all = admonitions.admonitions;
+const all = plugin.admonitions;
 // { note: {...}, tip: {...}, "my-type": {...}, ... }
 ```
 
@@ -51,7 +55,7 @@ const all = admonitions.admonitions;
 Returns all admonitions as an array with the `type` property included on each object.
 
 ```typescript
-for (const admonition of admonitions.admonitionArray) {
+for (const admonition of plugin.admonitionArray) {
     console.log(admonition.type, admonition.icon);
 }
 ```
@@ -61,7 +65,7 @@ for (const admonition of admonitions.admonitionArray) {
 Returns an array of all registered admonition type names.
 
 ```typescript
-console.log(admonitions.types);
+console.log(plugin.types);
 // ["note", "tip", "warning", "my-type", ...]
 ```
 
@@ -74,7 +78,7 @@ Icon operations are delegated to `plugin.iconManager`.
 Downloads an optional icon pack.
 
 ```typescript
-await admonitions.downloadIcon("rpg");
+await plugin.downloadIcon("rpg");
 ```
 
 ### `removeIcon(pack: DownloadableIconPack): Promise<void>`
@@ -82,23 +86,25 @@ await admonitions.downloadIcon("rpg");
 Removes a downloaded icon pack.
 
 ```typescript
-await admonitions.removeIcon("rpg");
+await plugin.removeIcon("rpg");
 ```
 
 ## Type Definitions
 
 ### `Admonition`
 
+See [JSON Specification](json-spec.md) for the full `Admonition` interface with field descriptions.
+
 ```typescript
 interface Admonition {
-    type: string;                   // Unique identifier (used in code blocks / callouts)
-    title?: string;                 // Default display title
-    icon: AdmonitionIconDefinition; // Icon to display
-    color: string;                  // RGB color string, e.g. "200, 50, 50"
-    command: boolean;               // Whether insert commands are registered
-    injectColor?: boolean;          // Whether to inject the color into the rendered output
-    noTitle: boolean;               // Whether to suppress the title by default
-    copy?: boolean;                 // Whether to show the copy-content button
+    type: string;
+    title?: string;
+    icon: AdmonitionIconDefinition;
+    color: string;
+    command: boolean;
+    injectColor?: boolean;
+    noTitle: boolean;
+    copy?: boolean;
 }
 ```
 
@@ -119,35 +125,5 @@ type IconType =
 
 `DownloadableIconPack` is a union of pack identifiers such as `"rpg"` and `"weather"`.
 
-## Settings
-
-The plugin's full settings object is available at `plugin.data`:
-
-```typescript
-interface AdmonitionSettings {
-    userAdmonitions: Record<string, Admonition>;
-    syntaxHighlight: boolean;
-    copyButton: boolean;
-    autoCollapse: boolean;
-    defaultCollapseType: "open" | "closed";
-    version: string;
-    injectColor: boolean;
-    parseTitles: boolean;
-    dropShadow: boolean;
-    hideEmpty: boolean;
-    icons: Array<DownloadableIconPack>;
-    useFontAwesome: boolean;
-    rpgDownloadedOnce: boolean;
-    open: {
-        admonitions: boolean;
-        icons: boolean;
-        other: boolean;
-        advanced: boolean;
-    };
-    msDocConverted: boolean;
-    useSnippet: boolean;
-    snippetPath: string;
-}
-```
-
-Prefer using `addAdmonition` / `removeAdmonition` over mutating `plugin.data.userAdmonitions` directly, as those methods also update CSS and persist settings.
+> [!NOTE]
+> Prefer `addAdmonition` / `removeAdmonition` over mutating `plugin.data.userAdmonitions` directly. Those methods also update the injected CSS and persist settings to disk.
