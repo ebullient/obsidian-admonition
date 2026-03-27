@@ -35,7 +35,7 @@ The Admonitions plugin for [Obsidian](https://obsidian.md) adds block-styled con
 
 1. [Admonition CSS](advanced/css.md)
 2. [JSON Specification](advanced/json-spec.md)
-3. [API](advanced/README.md)
+3. [API](advanced/api.md)
 4. [Localizing Admonitions](advanced/localizing.md)
 5. [Publish.js with Admonitions](advanced/publish.md)
 
