@@ -22,13 +22,14 @@ title:                  # Admonition title (optional).
 collapse:               # open | closed | none
 icon:                   # Override the icon.
 color:                  # Override the color.
+metadata:               # Arbitrary value set as data-callout-metadata attribute.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.
 ```
 ````
 
 > [!WARNING]
-> As of **4.4.1**, the `title`, `collapse`, `icon` and `color` parameters must be at the *top* of the block, in any order.
+> As of **4.4.1**, the `title`, `collapse`, `icon`, `color` and `metadata` parameters must be at the *top* of the block, in any order.
 
 ### Title
 
@@ -110,6 +111,33 @@ color: 200, 200, 200
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.
 ```
 ````
+
+### Metadata
+
+The `metadata` parameter sets a `data-callout-metadata` attribute on the rendered admonition element. It has no default visual effect, but makes the value available for CSS and JavaScript to target specific admonitions.
+
+````md
+```ad-note
+metadata: my-value
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.
+```
+````
+
+For callout syntax, metadata is specified after a `|` pipe inside the brackets:
+
+```md
+> [!note|my-value] Title
+> Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+```
+
+Both forms set `data-callout-metadata="my-value"` on the element, which can be used in CSS snippets:
+
+```css
+.callout[data-callout-metadata="my-value"] {
+    /* custom styles */
+}
+```
 
 ### No Content
 
