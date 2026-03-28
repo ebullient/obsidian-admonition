@@ -77,9 +77,10 @@ export class InsertAdmonitionModal extends Modal {
     public type: string;
     public title: string;
     public noTitle: boolean;
-    public collapse: "open" | "closed" | "none" = this.plugin.data.autoCollapse
-        ? this.plugin.data.defaultCollapseType
-        : "none";
+    public collapse: "open" | "closed" | "none" | "default" =
+        this.plugin.data.autoCollapse
+            ? this.plugin.data.defaultCollapseType
+            : "default";
     private element: HTMLElement;
     admonitionEl: HTMLDivElement;
     insert: boolean;
@@ -175,6 +176,7 @@ export class InsertAdmonitionModal extends Modal {
 
         const collapseSetting = new Setting(contentEl);
         collapseSetting.setName("Make Collapsible").addDropdown((d) => {
+            d.addOption("default", "Default");
             d.addOption("open", "Open");
             d.addOption("closed", "Closed");
             d.addOption("none", "None");
@@ -212,6 +214,11 @@ export class InsertAdmonitionModal extends Modal {
         this.admonitionEl.empty();
         if (this.type && this.plugin.admonitions[this.type]) {
             const admonition = this.plugin.admonitions[this.type];
+            const collapseForPreview = this.collapse === "default"
+                ? (this.plugin.data.autoCollapse
+                    ? this.plugin.data.defaultCollapseType
+                    : "none")
+                : this.collapse;
             this.element = this.plugin.getAdmonitionElement(
                 this.type,
                 this.title,
@@ -219,7 +226,7 @@ export class InsertAdmonitionModal extends Modal {
                 admonition.injectColor ?? this.plugin.data.injectColor
                     ? admonition.color
                     : null,
-                this.collapse
+                collapseForPreview
             );
             this.element.createDiv({
                 cls: "admonition-content",

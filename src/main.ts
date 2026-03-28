@@ -232,13 +232,7 @@ export default class ObsidianAdmonition extends Plugin {
                         ) {
                             titleLine = `title: ${suggestor.title}\n`;
                         }
-                        if (
-                            (this.data.autoCollapse &&
-                                suggestor.collapse !=
-                                    this.data.defaultCollapseType) ||
-                            (!this.data.autoCollapse &&
-                                suggestor.collapse != "none")
-                        ) {
+                        if (suggestor.collapse !== "default") {
                             collapseLine = `collapse: ${suggestor.collapse}\n`;
                         }
                         editor.getDoc().replaceSelection(
@@ -263,22 +257,11 @@ ${editor.getDoc().getSelection()}
                         if (!suggestor.insert) return;
                         let title = "",
                             collapse = "";
-                        if (
-                            (this.data.autoCollapse &&
-                                suggestor.collapse !=
-                                    this.data.defaultCollapseType) ||
-                            (!this.data.autoCollapse &&
-                                suggestor.collapse != "none")
-                        ) {
+                        if (suggestor.collapse !== "default") {
                             switch (suggestor.collapse) {
-                                case "open": {
-                                    collapse = "+";
-                                    break;
-                                }
-                                case "closed": {
-                                    collapse = "-";
-                                    break;
-                                }
+                                case "open":   collapse = "+"; break;
+                                case "closed": collapse = "-"; break;
+                                case "none":   collapse = "";  break;
                             }
                         }
                         if (
