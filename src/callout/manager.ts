@@ -273,21 +273,35 @@ export default class CalloutManager extends Component {
     setUseSnippet() {
         if (this.plugin.data.useSnippet) {
             this.updateSnippet();
+        } else {
+            this.plugin.app.customCss.setCssEnabledStatus(
+                this.plugin.data.snippetPath,
+                false
+            );
+            this.plugin.app.customCss.readSnippets();
+            if (this.plugin.data.snippetPath) {
+                this.plugin.app.vault.adapter
+                    .remove(this.snippetPath)
+                    .catch(() => {
+                        // File may already not exist; ignore
+                    });
+            }
         }
     }
     async updateSnippet() {
         if (!this.plugin.data.useSnippet) return;
-        if (await this.plugin.app.vault.adapter.exists(this.snippetPath)) {
-            await this.plugin.app.vault.adapter.write(
-                this.snippetPath,
-                this.generateCssString()
-            );
-        } else {
-            await this.plugin.app.vault.create(
-                this.snippetPath,
-                this.generateCssString()
-            );
+        const snippetPath = this.snippetPath;
+        const snippetsDir = snippetPath.substring(
+            0,
+            snippetPath.lastIndexOf("/")
+        );
+        if (!(await this.plugin.app.vault.adapter.exists(snippetsDir))) {
+            await this.plugin.app.vault.adapter.mkdir(snippetsDir);
         }
+        await this.plugin.app.vault.adapter.write(
+            snippetPath,
+            this.generateCssString()
+        );
         this.plugin.app.customCss.setCssEnabledStatus(
             this.plugin.data.snippetPath,
             true
