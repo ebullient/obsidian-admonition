@@ -22,3 +22,4 @@ generated/*
 *.map
 .claude/settings.local.json
 .claude/worktrees
+ad-test-vault/.obsidian

@@ -81,7 +81,7 @@ You can set all admonitions to be collapsible by default in the [settings](setti
 ![Collapse demo](https://github.com/ebullient/obsidian-admonitions/blob/main/publish/gifs/collapse.gif?raw=true)
 
 > [!NOTE]
-> Mermaid diagrams do not render inside code block admonitions that use `collapse: closed` or have "Collapsible By Default" enabled. Mermaid also cannot be combined with embeds or transclusions inside an admonition.
+> Mermaid diagrams render correctly inside admonitions regardless of collapse state.
 
 ### Icon
 
