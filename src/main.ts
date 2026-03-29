@@ -100,12 +100,6 @@ const DEFAULT_APP_SETTINGS: AdmonitionSettings = {
     parseTitles: true,
     dropShadow: true,
     hideEmpty: false,
-    open: {
-        admonitions: true,
-        icons: true,
-        other: true,
-        advanced: false,
-    },
     icons: [],
     useFontAwesome: true,
     rpgDownloadedOnce: false,

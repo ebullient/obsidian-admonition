@@ -40,10 +40,9 @@ export default class AdmonitionSetting extends PluginSettingTab {
     ) {
         super(app, plugin);
     }
-    async display(): Promise<void> {
+    display(): void {
         this.containerEl.empty();
         this.containerEl.addClass("admonition-settings");
-        this.containerEl.createEl("h2", { text: t9n("settings.title") });
 
         const admonitionEl = this.containerEl.createDiv(
             "admonitions-nested-settings",
@@ -279,40 +278,10 @@ export default class AdmonitionSetting extends PluginSettingTab {
         this.additionalEl = admonitionEl.createDiv("additional");
         this.buildTypes();
 
-        this.buildAdmonitions(
-            this.containerEl.createEl("details", {
-                cls: "admonitions-nested-settings",
-                attr: {
-                    ...(this.plugin.data.open.admonitions
-                        ? { open: true }
-                        : {}),
-                },
-            }),
-        );
-        this.buildIcons(
-            this.containerEl.createEl("details", {
-                cls: "admonitions-nested-settings",
-                attr: {
-                    ...(this.plugin.data.open.icons ? { open: true } : {}),
-                },
-            }),
-        );
-        this.buildOtherSyntaxes(
-            this.containerEl.createEl("details", {
-                cls: "admonitions-nested-settings",
-                attr: {
-                    ...(this.plugin.data.open.other ? { open: true } : {}),
-                },
-            }),
-        );
-        this.buildAdvanced(
-            this.containerEl.createEl("details", {
-                cls: "admonitions-nested-settings",
-                attr: {
-                    ...(this.plugin.data.open.advanced ? { open: true } : {}),
-                },
-            }),
-        );
+        this.buildAdmonitions(this.containerEl.createDiv());
+        this.buildIcons(this.containerEl.createDiv());
+        this.buildOtherSyntaxes(this.containerEl.createDiv());
+        this.buildAdvanced(this.containerEl.createDiv());
 
         const div = this.containerEl.createDiv("coffee");
         div.createEl("a", {
@@ -338,17 +307,11 @@ export default class AdmonitionSetting extends PluginSettingTab {
         link.click();
         URL.revokeObjectURL(url);
     }
-    buildAdmonitions(containerEl: HTMLDetailsElement) {
+    buildAdmonitions(containerEl: HTMLElement) {
         containerEl.empty();
-        containerEl.ontoggle = () => {
-            this.plugin.data.open.admonitions = containerEl.open;
-            this.plugin.saveSettings();
-        };
-        const summary = containerEl.createEl("summary");
-        new Setting(summary)
+        new Setting(containerEl)
             .setHeading()
             .setName(t9n("heading.admonitions-callouts"));
-        summary.createDiv("collapser").createDiv("handle");
 
         new Setting(containerEl)
             .setName(t9n("drop-shadow.name"))
@@ -463,15 +426,11 @@ export default class AdmonitionSetting extends PluginSettingTab {
             );
     }
 
-    buildIcons(containerEl: HTMLDetailsElement) {
+    buildIcons(containerEl: HTMLElement) {
         containerEl.empty();
-        containerEl.ontoggle = () => {
-            this.plugin.data.open.icons = containerEl.open;
-            this.plugin.saveSettings();
-        };
-        const summary = containerEl.createEl("summary");
-        new Setting(summary).setHeading().setName(t9n("heading.icon-packs"));
-        summary.createDiv("collapser").createDiv("handle");
+        new Setting(containerEl)
+            .setHeading()
+            .setName(t9n("heading.icon-packs"));
 
         new Setting(containerEl)
             .setName(t9n("font-awesome.name"))
@@ -515,8 +474,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 if (!possibilities.length) b.setDisabled(true);
             });
 
-        const iconsEl = containerEl.createDiv("admonitions-nested-settings");
-        new Setting(iconsEl);
+        const iconsEl = containerEl.createDiv();
         for (const icon of this.plugin.data.icons) {
             new Setting(iconsEl)
                 .setName(DownloadableIcons[icon])
@@ -555,32 +513,21 @@ export default class AdmonitionSetting extends PluginSettingTab {
         }
     }
 
-    buildOtherSyntaxes(containerEl: HTMLDetailsElement) {
+    buildOtherSyntaxes(containerEl: HTMLElement) {
         containerEl.empty();
-        containerEl.ontoggle = () => {
-            this.plugin.data.open.other = containerEl.open;
-            this.plugin.saveSettings();
-        };
-        const summary = containerEl.createEl("summary");
-        new Setting(summary)
+        const others = new Setting(containerEl)
             .setHeading()
             .setName(t9n("heading.additional-syntaxes"));
-        summary.createDiv("collapser").createDiv("handle");
 
-        containerEl.createEl("p", {
+        const info = others.descEl;
+        info.createEl("p", {
             text: "Obsidian 0.14 has introduced Callout boxes to its core functionality using the same syntax as the Microsoft Document callouts.",
-
-            cls: "setting-item",
         });
-        containerEl.createEl("p", {
+        info.createEl("p", {
             text: "This has rendered the Microsoft Document syntax for Admonitions obsolete, but Admonitions can still be used to create and manage your custom callout types.",
-
-            cls: "setting-item",
         });
-        containerEl.createEl("p", {
+        info.createEl("p", {
             text: "Your existing code block Admonitions will always work!",
-
-            cls: "setting-item",
         });
 
         if (!this.plugin.data.msDocConverted) {
@@ -800,15 +747,9 @@ export default class AdmonitionSetting extends PluginSettingTab {
         }
         return result;
     }
-    buildAdvanced(containerEl: HTMLDetailsElement) {
+    buildAdvanced(containerEl: HTMLElement) {
         containerEl.empty();
-        containerEl.ontoggle = () => {
-            this.plugin.data.open.advanced = containerEl.open;
-            this.plugin.saveSettings();
-        };
-        const summary = containerEl.createEl("summary");
-        new Setting(summary).setHeading().setName(t9n("heading.advanced"));
-        summary.createDiv("collapser").createDiv("handle");
+        new Setting(containerEl).setHeading().setName(t9n("heading.advanced"));
 
         new Setting(containerEl)
             .setName(t9n("markdown-highlight.name"))

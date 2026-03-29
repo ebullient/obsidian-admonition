@@ -39,12 +39,6 @@ export interface AdmonitionSettings {
     icons: Array<DownloadableIconPack>;
     useFontAwesome: boolean;
     rpgDownloadedOnce: boolean;
-    open: {
-        admonitions: boolean;
-        icons: boolean;
-        other: boolean;
-        advanced: boolean;
-    };
     msDocConverted: boolean;
     useSnippet: boolean;
     snippetPath: string;
