@@ -16,6 +16,7 @@ Open this vault in Obsidian with the [Admonition plugin](https://github.com/ebul
 | [[06-limitations]] | Known limitations (collapse requires a title) |
 | [[07-all-types]] | All built-in admonition types and their aliases |
 | [[08-mermaid]] | Mermaid diagrams in all collapse states; mermaid + embeds |
+| [[09-image-icon]] | Icon behavior reference: codeblocks, callout limitation, SVG/CSS alternative |
 
 ## Quick Syntax Reference
 
