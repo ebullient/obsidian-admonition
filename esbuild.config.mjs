@@ -3,7 +3,7 @@ import process from "process";
 import builtins from "builtin-modules";
 import { config } from "dotenv";
 import { sassPlugin } from "esbuild-sass-plugin";
-import { copyFileSync, mkdirSync } from "fs";
+import { copyFileSync, lstatSync, mkdirSync, readlinkSync } from "fs";
 import { resolve } from "path";
 
 config();
@@ -16,7 +16,27 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = process.argv[2] === "production";
 
-const dir = prod ? "./build" : process.env.OUTDIR;
+const rawDir = prod ? "./build" : process.env.OUTDIR;
+
+// If rawDir is (or contains) a symlink, resolve it to the real path and
+// pre-create the target so esbuild's internal mkdir doesn't fail.
+function prepareOutdir(p) {
+    if (!p) return p;
+    try {
+        const stat = lstatSync(p);
+        if (stat.isSymbolicLink()) {
+            const linkTarget = readlinkSync(p);
+            const realTarget = resolve(p, "..", linkTarget);
+            mkdirSync(realTarget, { recursive: true });
+            return realTarget;
+        }
+    } catch {
+        // path doesn't exist yet — let esbuild create it normally
+    }
+    return p;
+}
+
+const dir = prepareOutdir(rawDir);
 
 const options = {
     banner: {
