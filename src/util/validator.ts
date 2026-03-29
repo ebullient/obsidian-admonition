@@ -1,5 +1,5 @@
 import type { Admonition, AdmonitionIconDefinition } from "src/@types";
-import { t } from "src/lang/helpers";
+import { t9n } from "src/lang/helpers";
 import type ObsidianAdmonition from "src/main";
 
 type ValidationSuccess = {
@@ -13,6 +13,7 @@ type ValidationError = {
 };
 type Result = ValidationSuccess | ValidationError;
 
+/** Taken from https://stackoverflow.com/questions/34849001/check-if-css-selector-is-valid/42149818 */
 export const isSelectorValid = ((dummyElement) => (selector: string) => {
     try {
         dummyElement.querySelector(selector);
@@ -126,7 +127,7 @@ export namespace AdmonitionValidator {
         if (!type.length) {
             return {
                 success: false,
-                message: t("Admonition type cannot be empty."),
+                message: t9n("error.type-empty"),
                 failed: "type",
             };
         }
@@ -134,14 +135,14 @@ export namespace AdmonitionValidator {
         if (type.includes(" ")) {
             return {
                 success: false,
-                message: t("Admonition type cannot include spaces."),
+                message: t9n("error.type-spaces"),
                 failed: "type",
             };
         }
         if (!isSelectorValid(type)) {
             return {
                 success: false,
-                message: t("Types must be a valid CSS selector."),
+                message: t9n("error.type-css"),
                 failed: "type",
             };
         }
@@ -170,7 +171,7 @@ export namespace AdmonitionValidator {
         if (!definition.name?.length) {
             return {
                 success: false,
-                message: t("Icon cannot be empty."),
+                message: t9n("error.icon-empty"),
                 failed: "icon",
             };
         }
@@ -178,7 +179,7 @@ export namespace AdmonitionValidator {
         if (!icon) {
             return {
                 success: false,
-                message: t("Invalid icon name."),
+                message: t9n("error.icon-invalid"),
                 failed: "icon",
             };
         }

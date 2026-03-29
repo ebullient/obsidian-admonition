@@ -8,6 +8,7 @@ import {
     type TextComponent,
 } from "obsidian";
 import type { Admonition, AdmonitionIconDefinition } from "src/@types";
+import { t9n } from "src/lang/helpers";
 import type ObsidianAdmonition from "src/main";
 import { FuzzyInputSuggest } from "./suggester";
 
@@ -94,8 +95,8 @@ export class InsertAdmonitionModal extends Modal {
         contentEl.empty();
 
         const typeSetting = new Setting(contentEl);
-        typeSetting.setName("Admonition Type").addText((t) => {
-            t.setPlaceholder("Admonition Type").setValue(this.type);
+        typeSetting.setName(t9n("admonition-type.name")).addText((t) => {
+            t.setPlaceholder(t9n("admonition-type.name")).setValue(this.type);
             const modal = new AdmonitionSuggestionModal(
                 this.plugin,
                 t,
@@ -116,7 +117,7 @@ export class InsertAdmonitionModal extends Modal {
                     }
                     titleInput.setValue(this.title);
                 } else {
-                    new Notice("No admonition type by that name exists.");
+                    new Notice(t9n("error.admonition-type-missing"));
                     t.inputEl.value = "";
                 }
 
@@ -136,8 +137,8 @@ export class InsertAdmonitionModal extends Modal {
 
         const titleSetting = new Setting(contentEl);
         titleSetting
-            .setName("Admonition Title")
-            .setDesc("Leave blank to render without a title.")
+            .setName(t9n("modal.title.name"))
+            .setDesc(t9n("modal.title.desc"))
             .addText((t) => {
                 titleInput = t;
                 t.setValue(this.title);
@@ -172,17 +173,19 @@ export class InsertAdmonitionModal extends Modal {
             });
 
         const collapseSetting = new Setting(contentEl);
-        collapseSetting.setName("Make Collapsible").addDropdown((d) => {
-            d.addOption("default", "Default");
-            d.addOption("open", "Open");
-            d.addOption("closed", "Closed");
-            d.addOption("none", "None");
-            d.setValue(this.collapse);
-            d.onChange((v: "open" | "closed" | "none") => {
-                this.collapse = v;
-                this.buildAdmonition();
+        collapseSetting
+            .setName(t9n("modal.collapsible.name"))
+            .addDropdown((d) => {
+                d.addOption("default", t9n("option.default"));
+                d.addOption("open", t9n("option.open"));
+                d.addOption("closed", t9n("option.closed"));
+                d.addOption("none", t9n("option.none"));
+                d.setValue(this.collapse);
+                d.onChange((v: "open" | "closed" | "none") => {
+                    this.collapse = v;
+                    this.buildAdmonition();
+                });
             });
-        });
 
         this.admonitionEl = this.contentEl.createDiv();
         this.buildAdmonition();
@@ -190,7 +193,7 @@ export class InsertAdmonitionModal extends Modal {
         new Setting(contentEl)
             .addButton((b) =>
                 b
-                    .setButtonText("Insert")
+                    .setButtonText(t9n("btn.insert"))
                     .setCta()
                     .onClick(() => {
                         this.insert = true;
@@ -199,7 +202,7 @@ export class InsertAdmonitionModal extends Modal {
             )
             .addExtraButton((b) => {
                 b.setIcon("cross")
-                    .setTooltip("Cancel")
+                    .setTooltip(t9n("btn.cancel"))
                     .onClick(() => this.close());
                 b.extraSettingsEl.setAttr("tabindex", 0);
                 b.extraSettingsEl.onkeydown = (evt) => {

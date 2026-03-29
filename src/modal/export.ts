@@ -1,4 +1,5 @@
 import { Modal, Setting } from "obsidian";
+import { t9n } from "src/lang/helpers";
 import type ObsidianAdmonition from "src/main";
 
 export default class Export extends Modal {
@@ -14,14 +15,14 @@ export default class Export extends Modal {
     export = false;
 
     onOpen() {
-        this.titleEl.setText("Export Admonitions");
+        this.titleEl.setText(t9n("export.title"));
         this.containerEl.addClasses([
             "admonition-settings",
             "admonition-modal",
             "admonition-export-modal",
         ]);
         new Setting(this.contentEl).addButton((b) =>
-            b.setButtonText("Export Selected").onClick(() => {
+            b.setButtonText(t9n("export.selected")).onClick(() => {
                 this.export = true;
                 this.close();
             }),
@@ -30,7 +31,7 @@ export default class Export extends Modal {
         new Setting(this.contentEl)
             .addButton((b) =>
                 b
-                    .setButtonText("Select All")
+                    .setButtonText(t9n("export.select-all"))
                     .setCta()
                     .onClick(() => {
                         this.selectedAdmonitions = [...this.admonitionNames];
@@ -38,7 +39,7 @@ export default class Export extends Modal {
                     }),
             )
             .addButton((b) =>
-                b.setButtonText("Deselect All").onClick(() => {
+                b.setButtonText(t9n("export.deselect-all")).onClick(() => {
                     this.selectedAdmonitions = [];
                     this.generateToggles(toggleEl);
                 }),

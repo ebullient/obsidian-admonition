@@ -8,6 +8,7 @@ import {
     type SearchMatches,
     type TextComponent,
 } from "obsidian";
+import { t9n } from "src/lang/helpers";
 
 declare module "obsidian" {
     interface AbstractInputSuggest<T> {
@@ -47,7 +48,7 @@ export abstract class FuzzyInputSuggest<T> extends AbstractInputSuggest<
             cls: "suggestion-content",
         });
         if (!result?.item) {
-            content.setText("No match found");
+            content.setText(t9n("error.no-match"));
             content.parentElement?.addClass("is-selected");
             return;
         }

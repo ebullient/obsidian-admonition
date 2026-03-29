@@ -11,7 +11,7 @@ import {
     type TextComponent,
     type TFile,
 } from "obsidian";
-import { t } from "src/lang/helpers";
+import { t9n } from "src/lang/helpers";
 import type {
     Admonition,
     AdmonitionIconDefinition,
@@ -43,15 +43,15 @@ export default class AdmonitionSetting extends PluginSettingTab {
     async display(): Promise<void> {
         this.containerEl.empty();
         this.containerEl.addClass("admonition-settings");
-        this.containerEl.createEl("h2", { text: t("Admonition Settings") });
+        this.containerEl.createEl("h2", { text: t9n("settings.title") });
 
         const admonitionEl = this.containerEl.createDiv(
             "admonitions-nested-settings",
         );
         if (!Platform.isMobile) {
             new Setting(admonitionEl)
-                .setName("Export Custom Types as CSS")
-                .setDesc("Export a CSS snippet for custom callout types.")
+                .setName(t9n("export-css.name"))
+                .setDesc(t9n("export-css.desc"))
                 .addButton((b) =>
                     b
                         .setIcon("download")
@@ -79,13 +79,11 @@ export default class AdmonitionSetting extends PluginSettingTab {
         }
 
         new Setting(admonitionEl)
-            .setName("Export Custom Types as JSON")
-            .setDesc(
-                "Choose custom types to export as a JSON file that you can then share with other users.",
-            )
+            .setName(t9n("export-json.name"))
+            .setDesc(t9n("export-json.desc"))
             .addButton((b) =>
                 b
-                    .setButtonText("Download All")
+                    .setButtonText(t9n("btn.download-all"))
                     .setCta()
                     .onClick(() => {
                         const admonitions = Object.values(
@@ -95,7 +93,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                     }),
             )
             .addButton((b) =>
-                b.setButtonText("Select & Download").onClick(() => {
+                b.setButtonText(t9n("btn.select-download")).onClick(() => {
                     const modal = new Export(this.plugin);
                     modal.onClose = () => {
                         if (!modal.export) return;
@@ -113,10 +111,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
             );
 
         new Setting(admonitionEl)
-            .setName("Use CSS Snippet for Custom Callouts")
-            .setDesc(
-                "Instead of managing it internally, Admonitions will maintain a CSS snippet to enable your custom types for callouts. Required for correct rendering in popout windows.",
-            )
+            .setName(t9n("use-snippet.name"))
+            .setDesc(t9n("use-snippet.desc"))
             .addToggle((t) =>
                 t.setValue(this.plugin.data.useSnippet).onChange((v) => {
                     this.plugin.data.useSnippet = v;
@@ -126,13 +122,11 @@ export default class AdmonitionSetting extends PluginSettingTab {
             );
 
         new Setting(admonitionEl)
-            .setName(t("Add New"))
-            .setDesc(
-                "Add a new Admonition type. All custom Admonitions will also be usable as callouts.",
-            )
+            .setName(t9n("add-new.name"))
+            .setDesc(t9n("add-new.desc"))
             .addButton((button: ButtonComponent): ButtonComponent => {
                 const b = button
-                    .setTooltip(t("Add Additional"))
+                    .setTooltip(t9n("btn.add-additional"))
                     .setButtonText("+")
                     .onClick(async () => {
                         const modal = new SettingsModal(this.plugin);
@@ -164,8 +158,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 return b;
             });
         new Setting(admonitionEl)
-            .setName("Import Admonition(s)")
-            .setDesc("Import admonitions from a JSON definition.")
+            .setName(t9n("import.name"))
+            .setDesc(t9n("import.desc"))
             .addButton((b) => {
                 const input = createEl("input", {
                     attr: {
@@ -239,7 +233,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
 
                     input.value = null;
                 };
-                b.setButtonText("Choose Files");
+                b.setButtonText(t9n("btn.choose-files"));
                 b.buttonEl.appendChild(input);
                 b.onClick(() => input.click());
             })
@@ -330,7 +324,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
     }
     download(admonitions: Admonition[]) {
         if (!admonitions.length) {
-            new Notice("At least one admonition must be chosen to export.");
+            new Notice(t9n("error.export-none-selected"));
             return;
         }
         const link = createEl("a");
@@ -350,12 +344,14 @@ export default class AdmonitionSetting extends PluginSettingTab {
             this.plugin.saveSettings();
         };
         const summary = containerEl.createEl("summary");
-        new Setting(summary).setHeading().setName("Admonitions & Callouts");
+        new Setting(summary)
+            .setHeading()
+            .setName(t9n("heading.admonitions-callouts"));
         summary.createDiv("collapser").createDiv("handle");
 
         new Setting(containerEl)
-            .setName("Add Drop Shadow")
-            .setDesc("A drop shadow will be added to admonitions.")
+            .setName(t9n("drop-shadow.name"))
+            .setDesc(t9n("drop-shadow.desc"))
             .addToggle((t) => {
                 t.setValue(this.plugin.data.dropShadow).onChange(async (v) => {
                     this.plugin.data.dropShadow = v;
@@ -364,17 +360,17 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 });
             });
         new Setting(containerEl)
-            .setName(t("Collapsible by Default"))
+            .setName(t9n("collapsible.name"))
             .setDesc(
                 createFragment((e) => {
                     e.createSpan({
-                        text: "All admonitions & callouts will be collapsible by default. Use ",
+                        text: t9n("collapsible.desc-prefix"),
                     });
                     e.createEl("code", {
                         text: "collapse: none",
                     });
                     e.createSpan({
-                        text: t(" to prevent."),
+                        text: t9n("collapsible.desc-suffix"),
                     });
                 }),
             )
@@ -390,10 +386,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
 
         if (this.plugin.data.autoCollapse) {
             new Setting(containerEl)
-                .setName(t("Default Collapse Type"))
-                .setDesc(
-                    "Collapsible admonitions & callouts will be either opened or closed.",
-                )
+                .setName(t9n("collapse-type.name"))
+                .setDesc(t9n("collapse-type.desc"))
                 .addDropdown((d) => {
                     d.addOption("open", "open");
                     d.addOption("closed", "closed");
@@ -405,8 +399,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 });
         }
         new Setting(containerEl)
-            .setName(t("Add Copy Button"))
-            .setDesc("Add a 'copy content' button to admonitions & callouts.")
+            .setName(t9n("copy-button.name"))
+            .setDesc(t9n("copy-button.desc"))
             .addToggle((t) => {
                 t.setValue(this.plugin.data.copyButton);
                 t.onChange(async (v) => {
@@ -424,8 +418,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 });
             });
         new Setting(containerEl)
-            .setName(t("Parse Titles as Markdown"))
-            .setDesc(t("Admonition Titles will be rendered as markdown."))
+            .setName(t9n("parse-titles.name"))
+            .setDesc(t9n("parse-titles.desc"))
             .addToggle((t) => {
                 t.setValue(this.plugin.data.parseTitles);
                 t.onChange(async (v) => {
@@ -436,10 +430,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
             });
 
         new Setting(containerEl)
-            .setName("Set Admonition Colors")
-            .setDesc(
-                "Disable this setting to turn off admonition coloring by default. Can be overridden in the admonition definition.",
-            )
+            .setName(t9n("set-colors.name"))
+            .setDesc(t9n("set-colors.desc"))
             .addToggle((t) =>
                 t
                     .setValue(this.plugin.data.injectColor)
@@ -457,10 +449,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                     }),
             );
         new Setting(containerEl)
-            .setName("Hide Empty Admonitions")
-            .setDesc(
-                "Any admonition that does not have content inside it will be hidden.",
-            )
+            .setName(t9n("hide-empty.name"))
+            .setDesc(t9n("hide-empty.desc"))
             .addToggle((t) =>
                 t.setValue(this.plugin.data.hideEmpty).onChange(async (v) => {
                     this.plugin.data.hideEmpty = v;
@@ -479,14 +469,12 @@ export default class AdmonitionSetting extends PluginSettingTab {
             this.plugin.saveSettings();
         };
         const summary = containerEl.createEl("summary");
-        new Setting(summary).setHeading().setName("Icon Packs");
+        new Setting(summary).setHeading().setName(t9n("heading.icon-packs"));
         summary.createDiv("collapser").createDiv("handle");
 
         new Setting(containerEl)
-            .setName("Use Font Awesome Icons")
-            .setDesc(
-                "Font Awesome Free icons will be available in the item picker. Existing Admonitions defined using Font Awesome icons will continue to work.",
-            )
+            .setName(t9n("font-awesome.name"))
+            .setDesc(t9n("font-awesome.desc"))
             .addToggle((t) => {
                 t.setValue(this.plugin.data.useFontAwesome).onChange((v) => {
                     this.plugin.data.useFontAwesome = v;
@@ -501,10 +489,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 !this.plugin.data.icons.includes(icon as DownloadableIconPack),
         );
         new Setting(containerEl)
-            .setName("Load Additional Icons")
-            .setDesc(
-                "Load an additional icon pack. This requires an internet connection.",
-            )
+            .setName(t9n("additional-icons.name"))
+            .setDesc(t9n("additional-icons.desc"))
             .addDropdown((d) => {
                 if (!possibilities.length) {
                     d.setDisabled(true);
@@ -518,9 +504,9 @@ export default class AdmonitionSetting extends PluginSettingTab {
             })
             .addExtraButton((b) => {
                 b.setIcon("plus-with-circle")
-                    .setTooltip("Load")
+                    .setTooltip(t9n("btn.load"))
                     .onClick(async () => {
-                        if (!selected || !selected.length) return;
+                        if (!selected?.length) return;
 
                         await this.plugin.iconManager.downloadIcon(selected);
                         this.buildIcons(containerEl);
@@ -535,7 +521,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 .setName(DownloadableIcons[icon])
                 .addExtraButton((b) => {
                     b.setIcon("reset")
-                        .setTooltip("Redownload")
+                        .setTooltip(t9n("btn.redownload"))
                         .onClick(async () => {
                             await this.plugin.iconManager.removeIcon(icon);
                             await this.plugin.iconManager.downloadIcon(icon);
@@ -575,7 +561,9 @@ export default class AdmonitionSetting extends PluginSettingTab {
             this.plugin.saveSettings();
         };
         const summary = containerEl.createEl("summary");
-        new Setting(summary).setHeading().setName("Additional Syntaxes");
+        new Setting(summary)
+            .setHeading()
+            .setName(t9n("heading.additional-syntaxes"));
         summary.createDiv("collapser").createDiv("handle");
 
         containerEl.createEl("p", {
@@ -596,26 +584,28 @@ export default class AdmonitionSetting extends PluginSettingTab {
 
         if (!this.plugin.data.msDocConverted) {
             new Setting(containerEl)
-                .setName("Convert MSDoc Admonitions to Callouts")
+                .setName(t9n("convert-msdoc.name"))
                 .setDesc(
                     createFragment((e) => {
                         const text = e.createDiv("admonition-convert");
                         setIcon(text.createSpan(), WARNING_ICON_NAME);
                         text.createSpan({
-                            text: "This ",
+                            text: t9n("convert-msdoc.desc-warning"),
                         });
-                        text.createEl("strong", { text: "will" });
+                        text.createEl("strong", {
+                            text: t9n("convert-msdoc.desc-warning-bold"),
+                        });
                         text.createSpan({
-                            text: " modify notes. Use at your own risk and please make backups.",
+                            text: t9n("convert-msdoc.desc-warning-suffix"),
                         });
                         e.createEl("p", {
-                            text: "With large vaults, this could take awhile!",
+                            text: t9n("convert-msdoc.desc-note"),
                         });
                     }),
                 )
                 .addButton((b) =>
                     b
-                        .setButtonText("Convert")
+                        .setButtonText(t9n("btn.convert"))
                         .setCta()
                         .onClick(() => {
                             this.queue =
@@ -625,7 +615,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                     const container =
                                         e.createDiv("admonition-convert");
                                     container.createSpan({
-                                        text: "Converting MS-doc admonitions...",
+                                        text: t9n("convert-msdoc.progress"),
                                     });
                                     setIcon(
                                         container.createSpan(
@@ -641,26 +631,28 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 );
         }
         new Setting(containerEl)
-            .setName("Convert Codeblock Admonitions to Callouts")
+            .setName(t9n("convert-codeblock.name"))
             .setDesc(
                 createFragment((e) => {
                     const text = e.createDiv("admonition-convert");
                     setIcon(text.createSpan(), WARNING_ICON_NAME);
                     text.createSpan({
-                        text: "This ",
+                        text: t9n("convert-msdoc.desc-warning"),
                     });
-                    text.createEl("strong", { text: "will" });
+                    text.createEl("strong", {
+                        text: t9n("convert-msdoc.desc-warning-bold"),
+                    });
                     text.createSpan({
-                        text: " modify notes. Use at your own risk and please make backups.",
+                        text: t9n("convert-msdoc.desc-warning-suffix"),
                     });
                     e.createEl("p", {
-                        text: "With large vaults, this could take awhile!",
+                        text: t9n("convert-msdoc.desc-note"),
                     });
                 }),
             )
             .addButton((b) =>
                 b
-                    .setButtonText("Convert")
+                    .setButtonText(t9n("btn.convert"))
                     .setCta()
                     .onClick(() => {
                         this.queue = this.plugin.app.vault.getMarkdownFiles();
@@ -674,7 +666,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                 const container =
                                     e.createDiv("admonition-convert");
                                 container.createSpan({
-                                    text: "Converting Codeblock admonitions...",
+                                    text: t9n("convert-codeblock.progress"),
                                 });
                                 setIcon(
                                     container.createSpan(
@@ -814,16 +806,12 @@ export default class AdmonitionSetting extends PluginSettingTab {
             this.plugin.saveSettings();
         };
         const summary = containerEl.createEl("summary");
-        new Setting(summary).setHeading().setName("Advanced Settings");
+        new Setting(summary).setHeading().setName(t9n("heading.advanced"));
         summary.createDiv("collapser").createDiv("handle");
 
         new Setting(containerEl)
-            .setName(t("Markdown Syntax Highlighting"))
-            .setDesc(
-                t(
-                    "Use Obsidian's markdown syntax highlighter in admonition code blocks. This setting is experimental and could cause errors.",
-                ),
-            )
+            .setName(t9n("markdown-highlight.name"))
+            .setDesc(t9n("markdown-highlight.desc"))
             .addToggle((t) => {
                 t.setValue(this.plugin.data.syntaxHighlight);
                 t.onChange(async (v) => {
@@ -914,7 +902,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
             if (!admonition.command) {
                 setting.addExtraButton((b) => {
                     b.setIcon(ADD_COMMAND_NAME.toString())
-                        .setTooltip(t("Register Commands"))
+                        .setTooltip(t9n("btn.register"))
                         .onClick(async () => {
                             this.plugin.registerCommandsFor(admonition);
                             await this.plugin.saveSettings();
@@ -924,7 +912,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
             } else {
                 setting.addExtraButton((b) => {
                     b.setIcon(REMOVE_COMMAND_NAME.toString())
-                        .setTooltip(t("Unregister Commands"))
+                        .setTooltip(t9n("btn.unregister"))
                         .onClick(async () => {
                             this.plugin.unregisterCommandsFor(admonition);
                             await this.plugin.saveSettings();
@@ -936,7 +924,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
             setting
                 .addExtraButton((b) => {
                     b.setIcon("pencil")
-                        .setTooltip(t("Edit"))
+                        .setTooltip(t9n("btn.edit"))
                         .onClick(() => {
                             const modal = new SettingsModal(
                                 this.plugin,
@@ -1005,7 +993,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 })
                 .addExtraButton((b) => {
                     b.setIcon("trash")
-                        .setTooltip(t("Delete"))
+                        .setTooltip(t9n("btn.delete"))
                         .onClick(() => {
                             this.plugin.removeAdmonition(admonition);
                             this.display();
@@ -1081,7 +1069,7 @@ class SettingsModal extends Modal {
 
         let typeText: TextComponent;
         const typeSetting = new Setting(settingDiv)
-            .setName(t("Admonition Type"))
+            .setName(t9n("admonition-type.name"))
             .addText((text) => {
                 typeText = text;
                 typeText.setValue(this.type).onChange((v) => {
@@ -1127,10 +1115,8 @@ class SettingsModal extends Modal {
         });
 
         new Setting(settingDiv)
-            .setName(t("Admonition Title"))
-            .setDesc(
-                t("This will be the default title for this admonition type."),
-            )
+            .setName(t9n("admonition-title.name"))
+            .setDesc(t9n("admonition-title.desc"))
             .addText((text) => {
                 text.setValue(this.title).onChange((v) => {
                     if (!v.length) {
@@ -1147,28 +1133,22 @@ class SettingsModal extends Modal {
                 });
             });
         new Setting(settingDiv)
-            .setName(t("No Admonition Title by Default"))
+            .setName(t9n("no-title.name"))
             .setDesc(
                 createFragment((e) => {
                     e.createSpan({
-                        text: t("The admonition will have no title unless "),
+                        text: t9n("no-title.desc-prefix"),
                     });
                     e.createEl("code", { text: "title" });
-                    e.createSpan({ text: t(" is explicitly provided.") });
+                    e.createSpan({ text: t9n("no-title.desc-suffix") });
                 }),
             )
             .addToggle((t) => {
                 t.setValue(this.noTitle).onChange((v) => (this.noTitle = v));
             });
         new Setting(settingDiv)
-            .setName(t("Show Copy Button"))
-            .setDesc(
-                createFragment((e) => {
-                    e.createSpan({
-                        text: "A copy button will be added to the admonition & callout.",
-                    });
-                }),
-            )
+            .setName(t9n("show-copy.name"))
+            .setDesc(t9n("show-copy.desc"))
             .addToggle((t) => {
                 t.setValue(this.copy).onChange((v) => (this.copy = v));
             });
@@ -1182,8 +1162,8 @@ class SettingsModal extends Modal {
         });
         let iconText: TextComponent;
         new Setting(settingDiv)
-            .setName(t("Admonition Icon"))
-            .setDesc("Icon to display next to the title.")
+            .setName(t9n("admonition-icon.name"))
+            .setDesc(t9n("admonition-icon.desc"))
             .addText((text) => {
                 iconText = text;
                 if (this.icon.type !== "image") text.setValue(this.icon.name);
@@ -1233,7 +1213,7 @@ class SettingsModal extends Modal {
                 text.inputEl.onblur = validate;
             })
             .addButton((b) => {
-                b.setButtonText(t("Upload Image")).setIcon("image-file");
+                b.setButtonText(t9n("btn.upload-image")).setIcon("image-file");
                 b.buttonEl.addClass("admonition-file-upload");
                 b.buttonEl.appendChild(input);
                 b.onClick(() => input.click());
@@ -1279,7 +1259,7 @@ class SettingsModal extends Modal {
                         };
                         this.display();
                     } catch {
-                        new Notice("There was an error parsing the image.");
+                        new Notice(t9n("error.image-parse"));
                     }
                 };
                 image.src = evt.target.result.toString();
@@ -1295,7 +1275,7 @@ class SettingsModal extends Modal {
         const footerEl = contentEl.createDiv();
         const footerButtons = new Setting(footerEl);
         footerButtons.addButton((b) => {
-            b.setTooltip(t("Save"))
+            b.setTooltip(t9n("btn.save"))
                 .setIcon("checkmark")
                 .onClick(async () => {
                     const icon = { ...this.icon };
@@ -1315,7 +1295,7 @@ class SettingsModal extends Modal {
                                 : iconText.inputEl,
                             valid.message,
                         );
-                        new Notice("Fix errors before saving.");
+                        new Notice(t9n("error.fix-before-save"));
                         return;
                     }
                     this.saved = true;
@@ -1325,7 +1305,7 @@ class SettingsModal extends Modal {
         });
         footerButtons.addExtraButton((b) => {
             b.setIcon("cross")
-                .setTooltip("Cancel")
+                .setTooltip(t9n("btn.cancel"))
                 .onClick(() => {
                     this.saved = false;
                     this.close();
@@ -1339,7 +1319,7 @@ class SettingsModal extends Modal {
             ? "Set the admonition color. Disable to set manually using CSS."
             : "Admonition color is disabled and must be manually set using CSS.";
         new Setting(el)
-            .setName(t("Color"))
+            .setName(t9n("color.name"))
             .setDesc(desc)
             .addText((t) => {
                 t.inputEl.setAttribute("type", "color");
@@ -1443,7 +1423,7 @@ function componentToHex(c: number) {
 }
 function rgbToHex(rgb: string) {
     const result = /^(\d+),\s?(\d+),\s?(\d+)/i.exec(rgb);
-    if (!result || !result.length) {
+    if (!result?.length) {
         return "";
     }
     return `#${componentToHex(Number(result[1]))}${componentToHex(
