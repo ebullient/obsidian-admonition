@@ -50,7 +50,11 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
     ): EditorSuggestTriggerInfo {
         const line = editor.getLine(cursor.line);
         const match = this.testAndReturnQuery(line, cursor);
-        if (!match) return null;
+        if (!match) {
+            return null;
+        }
+        // prefix is captured by subclass regex so its length is used as the offset,
+        // correctly handling variants like `>[!` (len 3) vs `> [!` (len 4)
         const [_, prefix, query] = match;
 
         if (
@@ -64,7 +68,6 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
         return {
             end: cursor,
             start: {
-                // using 'prefix.length' instead of 'this.offset'
                 ch: match.index + prefix.length,
                 line: cursor.line
             },
@@ -75,6 +78,7 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
         value: [string, Admonition],
         evt: MouseEvent | KeyboardEvent
     ): void;
+    // Subclass regex must capture (prefix)(query) as groups 1 and 2
     abstract testAndReturnQuery(
         line: string,
         cursor: EditorPosition
@@ -86,9 +90,10 @@ export class CalloutSuggest extends AdmonitionOrCalloutSuggester {
         [text]: [text: string, item: Admonition],
         evt: MouseEvent | KeyboardEvent
     ): void {
-        if (!this.context) return;
+        if (!this.context) {
+            return;
+        }
 
-        // Code Refactoring
         const { editor, query, start, end } = this.context;
 
         const line = editor
@@ -120,12 +125,15 @@ export class CalloutSuggest extends AdmonitionOrCalloutSuggester {
         line: string,
         cursor: EditorPosition
     ): RegExpMatchArray | null {
-        if (/> ?\[!\w+\]/.test(line.slice(0, cursor.ch))) return null;
+        if (/> ?\[!\w+\]/.test(line.slice(0, cursor.ch))) {
+            return null;
+        }
 
-        // Modified the regex to capture 'prefix', 'query'
         const match = line.match(/(> ?\[!)(\w*)\]?/);
-        if (!match) return null;
-        return match
+        if (!match) {
+            return null;
+        }
+        return match;
     }
 }
 export class AdmonitionSuggest extends AdmonitionOrCalloutSuggester {
@@ -133,9 +141,10 @@ export class AdmonitionSuggest extends AdmonitionOrCalloutSuggester {
         [text]: [text: string, item: Admonition],
         evt: MouseEvent | KeyboardEvent
     ): void {
-        if (!this.context) return;
+        if (!this.context) {
+            return;
+        }
 
-        // Code Refactoring
         const { editor, start, end } = this.context;
 
         editor.replaceRange(
@@ -145,7 +154,6 @@ export class AdmonitionSuggest extends AdmonitionOrCalloutSuggester {
             "admonitions"
         );
 
-        // Move the cursor to the end of the inserted text
         editor.setCursor(
             start.line,
             start.ch + text.length
@@ -157,11 +165,14 @@ export class AdmonitionSuggest extends AdmonitionOrCalloutSuggester {
         line: string,
         cursor: EditorPosition
     ): RegExpMatchArray | null {
-        if (!/```ad-\w*/.test(line)) return null;
+        if (!/```ad-\w*/.test(line)) {
+            return null;
+        }
 
-        // Modified the regex to capture 'prefix', 'query'
         const match = line.match(/(```ad-)(\w*)/);
-        if (!match) return null;
+        if (!match) {
+            return null;
+        }
         return match;
     }
 }
