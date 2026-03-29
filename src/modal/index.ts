@@ -1,47 +1,44 @@
 import {
-    FuzzyMatch,
+    type FuzzyMatch,
     Modal,
     Notice,
-    SearchComponent,
-    Setting,
-    TextComponent,
     renderMatches,
-    setIcon
+    type SearchComponent,
+    Setting,
+    type TextComponent,
 } from "obsidian";
-
+import type { Admonition, AdmonitionIconDefinition } from "src/@types";
+import type ObsidianAdmonition from "src/main";
 import { FuzzyInputSuggest } from "./suggester";
-
-import { Admonition, AdmonitionIconDefinition } from "src/@types";
-import ObsidianAdmonition from "src/main";
 
 export class IconSuggestionModal extends FuzzyInputSuggest<AdmonitionIconDefinition> {
     constructor(
         public plugin: ObsidianAdmonition,
         input: TextComponent | SearchComponent,
-        items: AdmonitionIconDefinition[]
+        items: AdmonitionIconDefinition[],
     ) {
         super(plugin.app, input, items);
     }
     renderNote(
         noteEL: HTMLElement,
-        result: FuzzyMatch<AdmonitionIconDefinition>
+        result: FuzzyMatch<AdmonitionIconDefinition>,
     ): void {
         noteEL.setText(this.plugin.iconManager.getIconModuleName(result.item));
     }
     renderTitle(
         titleEl: HTMLElement,
-        result: FuzzyMatch<AdmonitionIconDefinition>
+        result: FuzzyMatch<AdmonitionIconDefinition>,
     ): void {
         renderMatches(titleEl, result.item.name, result.match.matches);
     }
     renderFlair(
         flairEl: HTMLElement,
-        result: FuzzyMatch<AdmonitionIconDefinition>
+        result: FuzzyMatch<AdmonitionIconDefinition>,
     ): void {
         const { item } = result;
 
         flairEl.appendChild(
-            this.plugin.iconManager.getIconNode(item) ?? createDiv()
+            this.plugin.iconManager.getIconNode(item) ?? createDiv(),
         );
     }
 
@@ -53,7 +50,7 @@ class AdmonitionSuggestionModal extends FuzzyInputSuggest<Admonition> {
     constructor(
         public plugin: ObsidianAdmonition,
         input: TextComponent | SearchComponent,
-        items: Admonition[]
+        items: Admonition[],
     ) {
         super(plugin.app, input, items);
     }
@@ -64,7 +61,7 @@ class AdmonitionSuggestionModal extends FuzzyInputSuggest<Admonition> {
         const { item } = result;
         flairEl
             .appendChild(
-                this.plugin.iconManager.getIconNode(item.icon) ?? createDiv()
+                this.plugin.iconManager.getIconNode(item.icon) ?? createDiv(),
             )
             .setAttribute("color", `rgb(${item.color})`);
     }
@@ -77,10 +74,10 @@ export class InsertAdmonitionModal extends Modal {
     public type: string;
     public title: string;
     public noTitle: boolean;
-    public collapse: "open" | "closed" | "none" | "default" =
-        this.plugin.data.autoCollapse
-            ? this.plugin.data.defaultCollapseType
-            : "default";
+    public collapse: "open" | "closed" | "none" | "default" = this.plugin.data
+        .autoCollapse
+        ? this.plugin.data.defaultCollapseType
+        : "default";
     private element: HTMLElement;
     admonitionEl: HTMLDivElement;
     insert: boolean;
@@ -91,7 +88,7 @@ export class InsertAdmonitionModal extends Modal {
 
         this.onOpen = () => this.display(true);
     }
-    private async display(focus?: boolean) {
+    private async display(_focus?: boolean) {
         const { contentEl } = this;
 
         contentEl.empty();
@@ -102,7 +99,7 @@ export class InsertAdmonitionModal extends Modal {
             const modal = new AdmonitionSuggestionModal(
                 this.plugin,
                 t,
-                this.plugin.admonitionArray
+                this.plugin.admonitionArray,
             );
 
             const build = () => {
@@ -147,7 +144,7 @@ export class InsertAdmonitionModal extends Modal {
 
                 t.onChange((v) => {
                     this.title = v;
-                    if (v.length == 0) {
+                    if (v.length === 0) {
                         this.noTitle = true;
                     } else {
                         this.noTitle = false;
@@ -158,15 +155,15 @@ export class InsertAdmonitionModal extends Modal {
                             this.type,
                             this.title,
                             admonition.icon,
-                            admonition.injectColor ??
-                                this.plugin.data.injectColor
+                            (admonition.injectColor ??
+                                this.plugin.data.injectColor)
                                 ? admonition.color
                                 : null,
-                            this.collapse
+                            this.collapse,
                         );
                         element.createDiv({
                             cls: "admonition-content",
-                            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla."
+                            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.",
                         });
                         this.element.replaceWith(element);
                         this.element = element;
@@ -198,7 +195,7 @@ export class InsertAdmonitionModal extends Modal {
                     .onClick(() => {
                         this.insert = true;
                         this.close();
-                    })
+                    }),
             )
             .addExtraButton((b) => {
                 b.setIcon("cross")
@@ -206,7 +203,7 @@ export class InsertAdmonitionModal extends Modal {
                     .onClick(() => this.close());
                 b.extraSettingsEl.setAttr("tabindex", 0);
                 b.extraSettingsEl.onkeydown = (evt) => {
-                    evt.key == "Enter" && this.close();
+                    evt.key === "Enter" && this.close();
                 };
             });
     }
@@ -214,23 +211,24 @@ export class InsertAdmonitionModal extends Modal {
         this.admonitionEl.empty();
         if (this.type && this.plugin.admonitions[this.type]) {
             const admonition = this.plugin.admonitions[this.type];
-            const collapseForPreview = this.collapse === "default"
-                ? (this.plugin.data.autoCollapse
-                    ? this.plugin.data.defaultCollapseType
-                    : "none")
-                : this.collapse;
+            const collapseForPreview =
+                this.collapse === "default"
+                    ? this.plugin.data.autoCollapse
+                        ? this.plugin.data.defaultCollapseType
+                        : "none"
+                    : this.collapse;
             this.element = this.plugin.getAdmonitionElement(
                 this.type,
                 this.title,
                 admonition.icon,
-                admonition.injectColor ?? this.plugin.data.injectColor
+                (admonition.injectColor ?? this.plugin.data.injectColor)
                     ? admonition.color
                     : null,
-                collapseForPreview
+                collapseForPreview,
             );
             this.element.createDiv({
                 cls: "admonition-content",
-                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla."
+                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.",
             });
             this.admonitionEl.appendChild(this.element);
         }

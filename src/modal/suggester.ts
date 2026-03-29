@@ -1,12 +1,12 @@
 import {
+    AbstractInputSuggest,
     type App,
     type FuzzyMatch,
-    type TextComponent,
-    type SearchMatches,
-    AbstractInputSuggest,
     prepareSimpleSearch,
-    SearchComponent,
-    renderMatches
+    renderMatches,
+    type SearchComponent,
+    type SearchMatches,
+    type TextComponent,
 } from "obsidian";
 
 declare module "obsidian" {
@@ -15,18 +15,15 @@ declare module "obsidian" {
     }
 }
 
-export interface FuzzyInputSuggest<T> {
-    renderNote?(noteEL: HTMLElement, result: FuzzyMatch<T>): void;
-    renderFlair?(flairEl: HTMLElement, result: FuzzyMatch<T>): void;
-}
-
 export abstract class FuzzyInputSuggest<T> extends AbstractInputSuggest<
     FuzzyMatch<T>
 > {
+    renderNote?: (noteEL: HTMLElement, result: FuzzyMatch<T>) => void;
+    renderFlair?: (flairEl: HTMLElement, result: FuzzyMatch<T>) => void;
     constructor(
         app: App,
         input: TextComponent | SearchComponent,
-        public items: T[]
+        public items: T[],
     ) {
         super(app, input.inputEl);
     }
@@ -46,8 +43,8 @@ export abstract class FuzzyInputSuggest<T> extends AbstractInputSuggest<
     abstract renderTitle(titleEl: HTMLElement, result: FuzzyMatch<T>): void;
     renderSuggestion(result: FuzzyMatch<T>, el: HTMLElement): void {
         el.addClass("mod-complex");
-        let content = el.createDiv({
-            cls: "suggestion-content"
+        const content = el.createDiv({
+            cls: "suggestion-content",
         });
         if (!result?.item) {
             content.setText("No match found");
@@ -59,7 +56,7 @@ export abstract class FuzzyInputSuggest<T> extends AbstractInputSuggest<
         this.renderNote?.(content.createDiv("suggestion-note"), result);
         this.renderFlair?.(
             el.createDiv("suggestion-aux").createDiv("suggestion-flair"),
-            result
+            result,
         );
     }
 
@@ -67,7 +64,7 @@ export abstract class FuzzyInputSuggest<T> extends AbstractInputSuggest<
         el: HTMLElement | DocumentFragment,
         text: string,
         matches: SearchMatches | null,
-        offset?: number
+        offset?: number,
     ): void {
         renderMatches(el, text, matches, offset);
     }

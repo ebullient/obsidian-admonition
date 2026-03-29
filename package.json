@@ -6,6 +6,10 @@
     "scripts": {
         "dev": "node ./esbuild.config.mjs",
         "build": "node ./esbuild.config.mjs production",
+        "fix": "npx @biomejs/biome check --write ./src",
+        "format": "npx @biomejs/biome format ./src",
+        "lint": "npx @biomejs/biome lint ./src",
+        "prebuild": "npx @biomejs/biome check ./src",
         "publish": "node ./esbuild.publish.mjs production",
         "preversion": "npm run build",
         "version": "auto-changelog -p",
@@ -29,6 +33,7 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.1",
         "@popperjs/core": "^2.9.2",
         "@primer/octicons": "^16.3.1",
+        "@biomejs/biome": "2.3.15",
         "@types/node": "^25.3.0",
         "@types/object.fromentries": "^2.0.4",
         "auto-changelog": "^2.5.0",

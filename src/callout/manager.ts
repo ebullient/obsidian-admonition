@@ -1,11 +1,11 @@
 import {
     Component,
-    MarkdownPostProcessorContext,
+    type MarkdownPostProcessorContext,
     Notice,
-    setIcon
+    setIcon,
 } from "obsidian";
-import { Admonition } from "src/@types";
-import ObsidianAdmonition from "src/main";
+import type { Admonition } from "src/@types";
+import type ObsidianAdmonition from "src/main";
 import { CalloutSuggest } from "../suggest/suggest";
 
 type Heights = Partial<{
@@ -28,7 +28,7 @@ export default class CalloutManager extends Component {
         document.head.appendChild(this.style);
 
         for (const admonition of Object.values(
-            this.plugin.data.userAdmonitions
+            this.plugin.data.userAdmonitions,
         )) {
             this.addAdmonition(admonition);
         }
@@ -37,7 +37,7 @@ export default class CalloutManager extends Component {
         this.plugin.registerEditorSuggest(new CalloutSuggest(this.plugin));
 
         this.plugin.registerMarkdownPostProcessor(
-            this.calloutProcessor.bind(this)
+            this.calloutProcessor.bind(this),
         );
     }
     heights: Array<keyof Heights> = [
@@ -45,7 +45,7 @@ export default class CalloutManager extends Component {
         "padding-top",
         "padding-bottom",
         "margin-top",
-        "margin-bottom"
+        "margin-bottom",
     ];
     heightMap: WeakMap<HTMLDivElement, Heights> = new WeakMap();
     calloutProcessor(el: HTMLElement, ctx: MarkdownPostProcessorContext) {
@@ -76,7 +76,7 @@ export default class CalloutManager extends Component {
                 (this.plugin.admonitions[type].copy ??
                     this.plugin.data.copyButton)
             ) {
-                let copy = content.createDiv("admonition-content-copy");
+                const copy = content.createDiv("admonition-content-copy");
                 setIcon(copy, "copy");
                 copy.addEventListener("click", () => {
                     navigator.clipboard
@@ -85,7 +85,7 @@ export default class CalloutManager extends Component {
                                 .split("\n")
                                 .slice(lineStart + 1, lineEnd + 1)
                                 .join("\n")
-                                .replace(/^> /gm, "")
+                                .replace(/^> /gm, ""),
                         )
                         .then(async () => {
                             new Notice("Callout content copied to clipboard.");
@@ -114,11 +114,11 @@ export default class CalloutManager extends Component {
 
         if (
             admonition.title &&
-            titleEl.textContent ==
+            titleEl.textContent ===
                 type[0].toUpperCase() + type.slice(1).toLowerCase()
         ) {
             const titleContentEl = titleEl.querySelector<HTMLDivElement>(
-                ".callout-title-inner"
+                ".callout-title-inner",
             );
             if (titleContentEl) {
                 titleContentEl.setText(admonition.title);
@@ -136,7 +136,7 @@ export default class CalloutManager extends Component {
 
         if (!content) return;
         callout.addClass("is-collapsible");
-        if (this.plugin.data.defaultCollapseType == "closed") {
+        if (this.plugin.data.defaultCollapseType === "closed") {
             callout.dataset.calloutFold = "-";
             callout.addClass("is-collapsed");
         } else {
@@ -147,7 +147,7 @@ export default class CalloutManager extends Component {
 
         setIcon(iconEl, "chevron-down");
 
-        let collapsed = callout.hasClass("is-collapsed");
+        const collapsed = callout.hasClass("is-collapsed");
 
         this.getComputedHeights(content);
 
@@ -166,23 +166,23 @@ export default class CalloutManager extends Component {
         const content =
             callout.querySelector<HTMLDivElement>(".callout-content");
 
-        function transitionEnd(evt: TransitionEvent) {
+        function transitionEnd(_evt: TransitionEvent) {
             content.removeEventListener("transitionend", transitionEnd);
             content.style.removeProperty("transition");
         }
         content.addEventListener("transitionend", transitionEnd);
         content.style.setProperty(
             "transition",
-            "all 100ms cubic-bezier(.02, .01, .47, 1)"
+            "all 100ms cubic-bezier(.02, .01, .47, 1)",
         );
-        let collapsed = callout.hasClass("is-collapsed");
+        const collapsed = callout.hasClass("is-collapsed");
 
-        if (!event || event.button == 0) {
+        if (!event || event.button === 0) {
             const heights = this.getComputedHeights(content);
             for (const prop of this.heights) {
                 content.style.setProperty(
                     prop,
-                    collapsed ? heights[prop] : "0px"
+                    collapsed ? heights[prop] : "0px",
                 );
             }
 
@@ -204,7 +204,7 @@ export default class CalloutManager extends Component {
     }
     generateCssString() {
         const sheet = [
-            `/* This snippet was auto-generated by the Admonitions plugin */\n\n`
+            "/* This snippet was auto-generated by the Admonitions plugin */\n\n",
         ];
         for (const rule of Array.from(this.sheet.cssRules)) {
             sheet.push(rule.cssText);
@@ -215,10 +215,10 @@ export default class CalloutManager extends Component {
         if (!admonition.icon) return;
         let rule: string;
         const color =
-            admonition.injectColor ?? this.plugin.data.injectColor
+            (admonition.injectColor ?? this.plugin.data.injectColor)
                 ? `--callout-color: ${admonition.color};`
                 : "";
-        if (admonition.icon.type == "obsidian") {
+        if (admonition.icon.type === "obsidian") {
             rule = `.callout[data-callout="${admonition.type.toLowerCase()}"] {
     ${color}
     --callout-icon: ${
@@ -240,8 +240,8 @@ export default class CalloutManager extends Component {
             this.sheet.deleteRule(this.indexing.indexOf(admonition.type));
         }
         this.indexing = [
-            ...this.indexing.filter((type) => type != admonition.type),
-            admonition.type
+            ...this.indexing.filter((type) => type !== admonition.type),
+            admonition.type,
         ];
         this.sheet.insertRule(rule, this.sheet.cssRules.length);
         this.updateSnippet();
@@ -255,7 +255,7 @@ export default class CalloutManager extends Component {
         this.updateSnippet();
     }
     style = document.head.createEl("style", {
-        attr: { id: "ADMONITIONS_CUSTOM_STYLE_SHEET" }
+        attr: { id: "ADMONITIONS_CUSTOM_STYLE_SHEET" },
     });
     get sheet() {
         return this.style.sheet;
@@ -267,7 +267,7 @@ export default class CalloutManager extends Component {
 
     get snippetPath() {
         return this.plugin.app.customCss.getSnippetPath(
-            this.plugin.data.snippetPath
+            this.plugin.data.snippetPath,
         );
     }
     setUseSnippet() {
@@ -276,7 +276,7 @@ export default class CalloutManager extends Component {
         } else {
             this.plugin.app.customCss.setCssEnabledStatus(
                 this.plugin.data.snippetPath,
-                false
+                false,
             );
             this.plugin.app.customCss.readSnippets();
             if (this.plugin.data.snippetPath) {
@@ -293,18 +293,18 @@ export default class CalloutManager extends Component {
         const snippetPath = this.snippetPath;
         const snippetsDir = snippetPath.substring(
             0,
-            snippetPath.lastIndexOf("/")
+            snippetPath.lastIndexOf("/"),
         );
         if (!(await this.plugin.app.vault.adapter.exists(snippetsDir))) {
             await this.plugin.app.vault.adapter.mkdir(snippetsDir);
         }
         await this.plugin.app.vault.adapter.write(
             snippetPath,
-            this.generateCssString()
+            this.generateCssString(),
         );
         this.plugin.app.customCss.setCssEnabledStatus(
             this.plugin.data.snippetPath,
-            true
+            true,
         );
         this.plugin.app.customCss.readSnippets();
     }

@@ -57,5 +57,5 @@ export default {
         "A copy button will be added to the admonition.",
     "Parse Titles as Markdown": "Parse Titles as Markdown",
     "Admonition Titles will be rendered as markdown.":
-        "Admonition Titles will be rendered as markdown."
+        "Admonition Titles will be rendered as markdown.",
 };

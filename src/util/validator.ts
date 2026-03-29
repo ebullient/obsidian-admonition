@@ -1,6 +1,6 @@
-import { Admonition, AdmonitionIconDefinition } from "src/@types";
+import type { Admonition, AdmonitionIconDefinition } from "src/@types";
 import { t } from "src/lang/helpers";
-import ObsidianAdmonition from "src/main";
+import type ObsidianAdmonition from "src/main";
 
 type ValidationSuccess = {
     success: true;
@@ -22,30 +22,30 @@ export const isSelectorValid = ((dummyElement) => (selector: string) => {
     return true;
 })(document.createDocumentFragment());
 
-export class AdmonitionValidator {
-    static validateImport(
+export namespace AdmonitionValidator {
+    export function validateImport(
         plugin: ObsidianAdmonition,
-        admonition: Admonition
+        admonition: Admonition,
     ): Result {
         const result: Result = {
             success: true,
-            messages: []
+            messages: [],
         };
         const validType = AdmonitionValidator.validateType(
             admonition.type,
-            plugin
+            plugin,
         );
-        if (validType.success == false) {
+        if (validType.success === false) {
             return validType;
         }
         const iconName =
-            typeof admonition.icon == "string"
+            typeof admonition.icon === "string"
                 ? admonition.icon
-                : typeof admonition.icon == "object"
-                ? admonition.icon?.name
-                : null;
+                : typeof admonition.icon === "object"
+                  ? admonition.icon?.name
+                  : null;
         const validIcon = AdmonitionValidator.validateType(iconName, plugin);
-        if (validIcon.success == false) {
+        if (validIcon.success === false) {
             return validIcon;
         }
 
@@ -54,80 +54,80 @@ export class AdmonitionValidator {
             result.messages.push(
                 "No installed icon found by the name " +
                     iconName +
-                    ". Perhaps you need to install a new icon pack?"
+                    ". Perhaps you need to install a new icon pack?",
             );
         }
-        if (admonition.title && typeof admonition.title != "string") {
+        if (admonition.title && typeof admonition.title !== "string") {
             return {
                 success: false,
                 failed: "title",
-                message: "Admonition titles can only be strings."
+                message: "Admonition titles can only be strings.",
             };
         }
         if (
             !("color" in admonition) ||
             !/(?:(?:2(?:[0-4]\d|5[0-5])|\d{1,2}|1\d\d)\s*,\s*){2}\s*(?:2(?:[0-4]\d|5[0-5])|\d{1,2}|1\d\d)/.test(
-                admonition.color
+                admonition.color,
             )
         ) {
             console.warn(
                 "No color provided for the import of " +
                     admonition.type +
-                    ". Adding a random color."
+                    ". Adding a random color.",
             );
             admonition.color = `${Math.floor(
-                Math.random() * 255
+                Math.random() * 255,
             )}, ${Math.floor(Math.random() * 255)}, ${Math.floor(
-                Math.random() * 255
+                Math.random() * 255,
             )}`;
         }
         const booleans: (keyof Admonition)[] = [
             "command",
             "injectColor",
             "noTitle",
-            "copy"
+            "copy",
         ];
         for (const key of booleans) {
             if (
                 key in admonition &&
-                typeof JSON.parse(JSON.stringify(admonition[key])) != "boolean"
+                typeof JSON.parse(JSON.stringify(admonition[key])) !== "boolean"
             ) {
                 return {
                     success: false,
                     failed: "booleans",
-                    message: `The "${key}" property must be a boolean if present.`
+                    message: `The "${key}" property must be a boolean if present.`,
                 };
             }
         }
         return result;
     }
-    static validate(
+    export function validate(
         plugin: ObsidianAdmonition,
         type: string,
         icon: AdmonitionIconDefinition,
-        oldType?: string
+        oldType?: string,
     ): Result {
         const validType = AdmonitionValidator.validateType(
             type,
             plugin,
-            oldType
+            oldType,
         );
-        if (validType.success == false) {
+        if (validType.success === false) {
             return validType;
         }
 
         return AdmonitionValidator.validateIcon(icon, plugin);
     }
-    static validateType(
+    export function validateType(
         type: string,
         plugin: ObsidianAdmonition,
-        oldType?: string
+        oldType?: string,
     ): Result {
         if (!type.length) {
             return {
                 success: false,
                 message: t("Admonition type cannot be empty."),
-                failed: "type"
+                failed: "type",
             };
         }
 
@@ -135,40 +135,43 @@ export class AdmonitionValidator {
             return {
                 success: false,
                 message: t("Admonition type cannot include spaces."),
-                failed: "type"
+                failed: "type",
             };
         }
         if (!isSelectorValid(type)) {
             return {
                 success: false,
                 message: t("Types must be a valid CSS selector."),
-                failed: "type"
+                failed: "type",
             };
         }
-        type = type.toLowerCase();
-        if (type != oldType && type in plugin.data.userAdmonitions) {
+        const normalizedType = type.toLowerCase();
+        if (
+            normalizedType !== oldType &&
+            normalizedType in plugin.data.userAdmonitions
+        ) {
             return {
                 success: false,
                 message: "That Admonition type already exists.",
-                failed: "type"
+                failed: "type",
             };
         }
         return { success: true };
     }
-    static validateIcon(
+    export function validateIcon(
         definition: AdmonitionIconDefinition,
-        plugin: ObsidianAdmonition
+        plugin: ObsidianAdmonition,
     ): Result {
         if (definition.type === "image") {
             return {
-                success: true
+                success: true,
             };
         }
         if (!definition.name?.length) {
             return {
                 success: false,
                 message: t("Icon cannot be empty."),
-                failed: "icon"
+                failed: "icon",
             };
         }
         const icon = plugin.iconManager.getIconType(definition.name);
@@ -176,11 +179,11 @@ export class AdmonitionValidator {
             return {
                 success: false,
                 message: t("Invalid icon name."),
-                failed: "icon"
+                failed: "icon",
             };
         }
         return {
-            success: true
+            success: true,
         };
     }
 }

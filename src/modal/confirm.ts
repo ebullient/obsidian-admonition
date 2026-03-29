@@ -1,12 +1,12 @@
-import { App, ButtonComponent, Modal } from "obsidian";
+import { type App, ButtonComponent, Modal } from "obsidian";
 
 export async function confirmWithModal(
     app: App,
     text: string,
     buttons: { cta: string; secondary: string } = {
         cta: "Yes",
-        secondary: "No"
-    }
+        secondary: "No",
+    },
 ): Promise<boolean> {
     return new Promise((resolve, reject) => {
         try {
@@ -15,7 +15,7 @@ export async function confirmWithModal(
                 resolve(modal.confirmed);
             };
             modal.open();
-        } catch (e) {
+        } catch {
             reject();
         }
     });
@@ -25,19 +25,19 @@ export class ConfirmModal extends Modal {
     constructor(
         app: App,
         public text: string,
-        public buttons: { cta: string; secondary: string }
+        public buttons: { cta: string; secondary: string },
     ) {
         super(app);
     }
-    confirmed: boolean = false;
+    confirmed = false;
     async display() {
         this.contentEl.empty();
         this.contentEl.addClass("confirm-modal");
         this.contentEl.createEl("p", {
-            text: this.text
+            text: this.text,
         });
         const buttonEl = this.contentEl.createDiv(
-            "fantasy-calendar-confirm-buttons"
+            "fantasy-calendar-confirm-buttons",
         );
         new ButtonComponent(buttonEl)
             .setButtonText(this.buttons.cta)

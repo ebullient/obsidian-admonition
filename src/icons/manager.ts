@@ -1,19 +1,21 @@
-import { faCopy, far, IconPrefix } from "@fortawesome/free-regular-svg-icons";
-import { fas } from "@fortawesome/free-solid-svg-icons";
-import { fab } from "@fortawesome/free-brands-svg-icons";
+import type { IconName } from "@fortawesome/fontawesome-svg-core";
 import {
-    IconDefinition,
     findIconDefinition,
     icon as getFAIcon,
-    library
+    type IconDefinition,
+    library,
 } from "@fortawesome/fontawesome-svg-core";
-
-import type { IconName } from "@fortawesome/fontawesome-svg-core";
-
+import { fab } from "@fortawesome/free-brands-svg-icons";
+import {
+    faCopy,
+    far,
+    type IconPrefix,
+} from "@fortawesome/free-regular-svg-icons";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { getIconIds, Notice, setIcon } from "obsidian";
 /* import { RPG } from "./rpgawesome"; */
 import type { AdmonitionIconDefinition, IconType } from "src/@types";
 import type ObsidianAdmonition from "src/main";
-import { getIconIds, Notice, setIcon } from "obsidian";
 import { type DownloadableIconPack, DownloadableIcons } from "./packs";
 
 export { type DownloadableIconPack, DownloadableIcons };
@@ -33,24 +35,24 @@ export class IconManager {
                     i.iconName,
                     {
                         name: i.iconName,
-                        type: "font-awesome" as "font-awesome"
-                    }
+                        type: "font-awesome" as const,
+                    },
                 ];
-            })
+            }),
     );
     constructor(public plugin: ObsidianAdmonition) {}
     async load() {
         for (const icon of this.plugin.data.icons) {
             const exists = await this.plugin.app.vault.adapter.exists(
-                this.localIconPath(icon)
+                this.localIconPath(icon),
             );
             if (!exists) {
                 await this.downloadIcon(icon);
             } else {
                 this.DOWNLOADED[icon] = JSON.parse(
                     await this.plugin.app.vault.adapter.read(
-                        `${this.plugin.app.plugins.getPluginFolder()}/obsidian-admonition/${icon}.json`
-                    )
+                        `${this.plugin.app.plugins.getPluginFolder()}/obsidian-admonition/${icon}.json`,
+                    ),
                 );
             }
         }
@@ -65,7 +67,7 @@ export class IconManager {
             downloaded.push(
                 ...Object.keys(icons).map((name) => {
                     return { type: pack, name };
-                })
+                }),
             );
         }
         this.iconDefinitions = [
@@ -75,7 +77,7 @@ export class IconManager {
             ...getIconIds().map((name) => {
                 return { type: "obsidian" as IconType, name };
             }),
-            ...downloaded
+            ...downloaded,
         ];
     }
     iconPath(pack: DownloadableIconPack) {
@@ -93,7 +95,7 @@ export class IconManager {
             this.plugin.data.icons = [...new Set(this.plugin.data.icons)];
             await this.plugin.app.vault.adapter.write(
                 this.localIconPath(pack),
-                JSON.stringify(icons)
+                JSON.stringify(icons),
             );
             this.DOWNLOADED[pack] = icons;
             await this.plugin.saveSettings();
@@ -139,7 +141,7 @@ export class IconManager {
             img.src = icon.name;
             return img;
         }
-        if (icon.type == "obsidian") {
+        if (icon.type === "obsidian") {
             const el = createDiv();
             setIcon(el, icon.name);
             return el;
@@ -153,7 +155,7 @@ export class IconManager {
         for (const prefix of ["fas", "far", "fab"] as IconPrefix[]) {
             const definition = findIconDefinition({
                 iconName: icon.name as IconName,
-                prefix
+                prefix,
             });
             if (definition) return getFAIcon(definition).node[0];
         }

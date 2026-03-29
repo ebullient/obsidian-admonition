@@ -1,12 +1,12 @@
 import {
-    Editor,
-    EditorPosition,
+    type Editor,
+    type EditorPosition,
     EditorSuggest,
-    EditorSuggestContext,
-    EditorSuggestTriggerInfo
+    type EditorSuggestContext,
+    type EditorSuggestTriggerInfo,
 } from "obsidian";
-import { Admonition } from "src/@types";
-import ObsidianAdmonition from "src/main";
+import type { Admonition } from "src/@types";
+import type ObsidianAdmonition from "src/main";
 
 abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
     [string, Admonition]
@@ -18,12 +18,12 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
         if (!ctx.query?.length) return Object.entries(this.plugin.admonitions);
 
         return Object.entries(this.plugin.admonitions).filter((p) =>
-            p[0].toLowerCase().contains(ctx.query.toLowerCase())
+            p[0].toLowerCase().contains(ctx.query.toLowerCase()),
         );
     }
     renderSuggestion(
         [text, item]: [text: string, item: Admonition],
-        el: HTMLElement
+        el: HTMLElement,
     ) {
         el.addClasses(["admonition-suggester-item", "mod-complex"]);
         el.style.setProperty("--callout-color", item.color);
@@ -31,12 +31,12 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
         const iconDiv = el.createDiv("suggestion-aux").createDiv({
             cls: "suggestion-flair",
             attr: {
-                style: `color: rgb(var(--callout-color))`
-            }
+                style: "color: rgb(var(--callout-color))",
+            },
         });
         let iconEl = this.plugin.iconManager.getIconNode(item.icon);
         // Unpack the icon if it's an Obsidian one, as they're wrapped with an extra <div>
-        if (iconEl instanceof HTMLDivElement && iconEl.childElementCount == 1)
+        if (iconEl instanceof HTMLDivElement && iconEl.childElementCount === 1)
             iconEl = iconEl.firstElementChild;
         else if (iconEl !== null) {
             iconEl.removeClass("svg-inline--fa");
@@ -46,7 +46,7 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
     }
     onTrigger(
         cursor: EditorPosition,
-        editor: Editor
+        editor: Editor,
     ): EditorSuggestTriggerInfo {
         const line = editor.getLine(cursor.line);
         const match = this.testAndReturnQuery(line, cursor);
@@ -59,7 +59,7 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
 
         if (
             Object.keys(this.plugin.admonitions).find(
-                (p) => p.toLowerCase() == query.toLowerCase()
+                (p) => p.toLowerCase() === query.toLowerCase(),
             )
         ) {
             return null;
@@ -69,26 +69,26 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
             end: cursor,
             start: {
                 ch: match.index + prefix.length,
-                line: cursor.line
+                line: cursor.line,
             },
-            query
+            query,
         };
     }
     abstract selectSuggestion(
         value: [string, Admonition],
-        evt: MouseEvent | KeyboardEvent
+        evt: MouseEvent | KeyboardEvent,
     ): void;
     // Subclass regex must capture (prefix)(query) as groups 1 and 2
     abstract testAndReturnQuery(
         line: string,
-        cursor: EditorPosition
+        cursor: EditorPosition,
     ): RegExpMatchArray | null;
 }
 
 export class CalloutSuggest extends AdmonitionOrCalloutSuggester {
     selectSuggestion(
         [text]: [text: string, item: Admonition],
-        evt: MouseEvent | KeyboardEvent
+        _evt: MouseEvent | KeyboardEvent,
     ): void {
         if (!this.context) {
             return;
@@ -96,9 +96,7 @@ export class CalloutSuggest extends AdmonitionOrCalloutSuggester {
 
         const { editor, query, start, end } = this.context;
 
-        const line = editor
-            .getLine(end.line)
-            .slice(end.ch);
+        const line = editor.getLine(end.line).slice(end.ch);
         const [_, exists] = line.match(/^(\] ?)/) ?? [];
 
         editor.replaceRange(
@@ -106,24 +104,18 @@ export class CalloutSuggest extends AdmonitionOrCalloutSuggester {
             start,
             {
                 ...end,
-                ch:
-                    start.ch +
-                    query.length +
-                    (exists?.length ?? 0)
+                ch: start.ch + query.length + (exists?.length ?? 0),
             },
-            "admonitions"
+            "admonitions",
         );
 
-        editor.setCursor(
-            start.line,
-            start.ch + text.length + 2
-        );
+        editor.setCursor(start.line, start.ch + text.length + 2);
 
         this.close();
     }
     testAndReturnQuery(
         line: string,
-        cursor: EditorPosition
+        cursor: EditorPosition,
     ): RegExpMatchArray | null {
         if (/> ?\[!\w+\]/.test(line.slice(0, cursor.ch))) {
             return null;
@@ -139,7 +131,7 @@ export class CalloutSuggest extends AdmonitionOrCalloutSuggester {
 export class AdmonitionSuggest extends AdmonitionOrCalloutSuggester {
     selectSuggestion(
         [text]: [text: string, item: Admonition],
-        evt: MouseEvent | KeyboardEvent
+        _evt: MouseEvent | KeyboardEvent,
     ): void {
         if (!this.context) {
             return;
@@ -147,23 +139,15 @@ export class AdmonitionSuggest extends AdmonitionOrCalloutSuggester {
 
         const { editor, start, end } = this.context;
 
-        editor.replaceRange(
-            `${text}`,
-            start,
-            end,
-            "admonitions"
-        );
+        editor.replaceRange(`${text}`, start, end, "admonitions");
 
-        editor.setCursor(
-            start.line,
-            start.ch + text.length
-        );
+        editor.setCursor(start.line, start.ch + text.length);
 
         this.close();
     }
     testAndReturnQuery(
         line: string,
-        cursor: EditorPosition
+        _cursor: EditorPosition,
     ): RegExpMatchArray | null {
         if (!/```ad-\w*/.test(line)) {
             return null;

@@ -1,5 +1,5 @@
 import { Modal, Setting } from "obsidian";
-import ObsidianAdmonition from "src/main";
+import type ObsidianAdmonition from "src/main";
 
 export default class Export extends Modal {
     constructor(public plugin: ObsidianAdmonition) {
@@ -18,13 +18,13 @@ export default class Export extends Modal {
         this.containerEl.addClasses([
             "admonition-settings",
             "admonition-modal",
-            "admonition-export-modal"
+            "admonition-export-modal",
         ]);
         new Setting(this.contentEl).addButton((b) =>
             b.setButtonText("Export Selected").onClick(() => {
                 this.export = true;
                 this.close();
-            })
+            }),
         );
         let toggleEl: HTMLDivElement;
         new Setting(this.contentEl)
@@ -35,13 +35,13 @@ export default class Export extends Modal {
                     .onClick(() => {
                         this.selectedAdmonitions = [...this.admonitionNames];
                         this.generateToggles(toggleEl);
-                    })
+                    }),
             )
             .addButton((b) =>
                 b.setButtonText("Deselect All").onClick(() => {
                     this.selectedAdmonitions = [];
                     this.generateToggles(toggleEl);
-                })
+                }),
             );
         toggleEl = this.contentEl.createDiv("additional");
         this.generateToggles(toggleEl);
@@ -58,7 +58,7 @@ export default class Export extends Modal {
                         } else {
                             this.selectedAdmonitions.remove(name);
                         }
-                    }
+                    },
                 );
             });
         }
