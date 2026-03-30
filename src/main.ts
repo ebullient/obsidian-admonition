@@ -370,8 +370,20 @@ ${editor.getDoc().getSelection()}
             if (view?.editor?.cm?.state?.field(editorLivePreviewField)) {
                 const editor = view.editor.cm;
                 admonitionElement.onClickEvent((ev) => {
-                    if (ev.defaultPrevented || ev.detail > 1 || ev.shiftKey)
+                    if (ev.defaultPrevented || ev.detail > 1 || ev.shiftKey) {
                         return;
+                    }
+                    const target = ev.target as HTMLElement;
+                    const interactive = target.closest(
+                        "input, button, select, textarea, a[href], label, [contenteditable='true'], [tabindex]:not([tabindex='-1'])",
+                    );
+                    if (
+                        interactive &&
+                        interactive !== admonitionElement &&
+                        admonitionElement.contains(interactive)
+                    ) {
+                        return;
+                    }
                     try {
                         setTimeout(() => {
                             try {
