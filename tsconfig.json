@@ -4,13 +4,14 @@
         "baseUrl": ".",
         "inlineSourceMap": true,
         "inlineSources": true,
-        "module": "ESNext",
-        "target": "es6",
+        "target": "ES2022",
+        "module": "nodenext",
         "allowJs": true,
         "noImplicitAny": true,
-        "moduleResolution": "node",
+        "moduleResolution": "nodenext",
+        "esModuleInterop": true,
         "importHelpers": true,
         "lib": ["dom", "es5", "scripthost", "es2019"]
     },
-    "include": ["**/*.ts"]
+    "include": ["**/*.ts", "**/*.js"]
 }

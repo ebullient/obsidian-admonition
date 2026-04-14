@@ -18,11 +18,6 @@ on:
         default: true
         required: true
         type: boolean
-      retry:
-        description: "Retry release (clear created tag)"
-        default: false
-        required: true
-        type: boolean
 
 env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
@@ -32,17 +27,20 @@ jobs:
   build:
     permissions:
       contents: write
-      actions: write
+      id-token: write
+      attestations: write
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.build.outputs.version }}
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      # persist-credentials required: this step pushes commits and tags
+      # zizmor: ignore[artipacked]
       with:
         fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
 
     - name: Use Node.js
-      uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
       with:
         node-version: '20'
         cache: 'npm'
@@ -52,38 +50,34 @@ jobs:
       id: build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        INPUT_VERSION: ${{ github.event.inputs.version }}
+        INPUT_UPDATE_MANIFEST: ${{ github.event.inputs.update_manifest }}
+        INPUT_UPDATE_BRAT: ${{ github.event.inputs.update_brat }}
       run: |
-        echo "version: ${{ github.event.inputs.version }}"
-        echo "retry: ${{ github.event.inputs.retry }}"
-        echo "update_manifest: ${{ github.event.inputs.update_manifest }}"
-        echo "update_brat: ${{ github.event.inputs.update_brat }}"
+        echo "version: $INPUT_VERSION"
+        echo "update_manifest: $INPUT_UPDATE_MANIFEST"
+        echo "update_brat: $INPUT_UPDATE_BRAT"
 
-        git config user.name "${{ env.GH_BOT_NAME }}"
-        git config user.email "${{ env.GH_BOT_EMAIL }}"
+        git config user.name "$GH_BOT_NAME"
+        git config user.email "$GH_BOT_EMAIL"
 
         npm ci
-        if [[ "${{ github.event.inputs.retry }}" = "true" ]]; then
-          npm run preversion
-        else
-          npm version "${{ github.event.inputs.version }}" --no-git-tag-version
-        fi
-        VERSION=$(node -p "require('./package.json').version")
+        npm version "$INPUT_VERSION" --no-git-tag-version
+        VERSION=$(grep '^  "version"' package.json | cut -d'"' -f4)
         echo "$VERSION"
 
         if git rev-parse "refs/tags/$VERSION" > /dev/null 2>&1; then
-          if [[ "${{ github.event.inputs.retry }}" = "true" ]]; then
-            gh release delete "$VERSION" --cleanup-tag --yes
-          else
-            echo "🛑 Tag $VERSION already exists"
-            exit 1
-          fi
+          echo "🛑 Tag $VERSION already exists. Delete the release and tag manually, then re-run."
+          exit 1
         fi
 
-        if [ "${{ github.event.inputs.update_manifest }}" = "true" ]; then
-          sed -i "s|\"version\": \"[0-9.]*\"|\"version\": \"${VERSION}\"|" manifest.json
+        if [ "$INPUT_UPDATE_MANIFEST" = "true" ]; then
+          # shellcheck disable=SC2086
+          sed -i 's|\(version":\) "[0-9\.]*"|\1 "'$VERSION'"|' manifest.json
         fi
-        if [ "${{ github.event.inputs.update_brat }}" = "true" ]; then
-          sed -i "s|\"version\": \"[0-9.]*\"|\"version\": \"${VERSION}\"|" manifest-beta.json
+        if [ "$INPUT_UPDATE_BRAT" = "true" ]; then
+          # shellcheck disable=SC2086
+          sed -i 's|\(version":\) "[0-9\.]*"|\1 "'$VERSION'"|' manifest-beta.json
         fi
 
         git add .
@@ -99,31 +93,46 @@ jobs:
 
     # Package the required files into a zip
     - name: Package
+      env:
+        REPO_NAME: ${{ github.event.repository.name }}
+        RELEASE_VERSION: ${{ steps.build.outputs.version }}
       run: |
-        mkdir ${{ github.event.repository.name }}
-        cp ./build/* ${{ github.event.repository.name }}
-        zip -r ${{ github.event.repository.name }}-${{ steps.build.outputs.version }}.zip ${{ github.event.repository.name }}
+        mv build "$REPO_NAME"
+        zip -r "${REPO_NAME}-${RELEASE_VERSION}.zip" "$REPO_NAME"
+        unzip -j "${REPO_NAME}-${RELEASE_VERSION}.zip" \
+            "$REPO_NAME/main.js" \
+            "$REPO_NAME/styles.css"
+
+    # Attest build provenance for release artifacts
+    - name: Attest build artifacts
+      uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26  # v4
+      with:
+        subject-path: |
+          ${{ github.event.repository.name }}-${{ steps.build.outputs.version }}.zip
+          ./main.js
+          ./styles.css
 
     # Create the release on github
     - name: Create Release
       id: create_release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        INPUT_UPDATE_MANIFEST: ${{ github.event.inputs.update_manifest }}
+        REPO_NAME: ${{ github.event.repository.name }}
+        RELEASE_VERSION: ${{ steps.build.outputs.version }}
       run: |
         prerelease=true
-        if [[ "${{ github.event.inputs.update_manifest }}" == "true" ]]; then
+        if [ "$INPUT_UPDATE_MANIFEST" = "true" ]; then
             prerelease=false
         fi
 
-        gh release create "${{ steps.build.outputs.version }}" \
+        gh release create "$RELEASE_VERSION" \
             -F ./release-notes.md \
-            --title "Release ${{ steps.build.outputs.version }}" \
+            --title "$RELEASE_VERSION" \
             --verify-tag \
-            --prerelease=${prerelease}
-
-        gh release upload "${{ steps.build.outputs.version }}" --clobber \
-            ${{ github.event.repository.name }}-${{ steps.build.outputs.version }}.zip \
-            './build/main.js#main.js' \
-            './build/styles.css#styles.css' \
+            --prerelease=${prerelease} \
+            "${REPO_NAME}-${RELEASE_VERSION}.zip" \
+            './main.js' \
+            './styles.css' \
             './manifest.json' \
             './manifest-beta.json'

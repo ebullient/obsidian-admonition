@@ -1,54 +1,56 @@
 {
-    "name": "obsidian-admonition",
-    "version": "11.0.3",
-    "description": "Enhanced callouts for Obsidian.md",
-    "main": "main.js",
-    "scripts": {
-        "dev": "node ./esbuild.config.mjs",
-        "build": "node ./esbuild.config.mjs production",
-        "fix": "npx @biomejs/biome check --write ./src",
-        "format": "npx @biomejs/biome format ./src",
-        "lint": "npx @biomejs/biome lint ./src",
-        "prebuild": "npx @biomejs/biome check ./src",
-        "publish": "node ./esbuild.publish.mjs production",
-        "preversion": "npm run build",
-        "version": "auto-changelog -p",
-        "brat-notes": "run() { auto-changelog --stdout --hide-credit --hide-empty-releases --template .github/changelog.hbs -v $1 --starting-version $1 > release-notes.md; }; run"
-    },
-    "auto-changelog": {
-        "backfillLimit": false,
-        "commitLimit": false,
-        "ignoreCommitPattern": "(🔖|🔨|🧹|changelog|release|Update README).*",
-        "replaceText": {
-            "([;.,] [rR]esolves) #\\d+\\.?\\s*$": "$1",
-            "([;.,] [Ff]ixes) #\\d+\\.?\\s*$": "$1"
-        }
-    },
-    "keywords": [],
-    "author": "ebullient",
-    "license": "MIT",
-    "devDependencies": {
-        "@fortawesome/fontawesome-svg-core": "^1.2.32",
-        "@fortawesome/free-regular-svg-icons": "^6.7.2",
-        "@fortawesome/free-solid-svg-icons": "^5.15.1",
-        "@popperjs/core": "^2.9.2",
-        "@primer/octicons": "^19.22.0",
-        "@biomejs/biome": "2.3.15",
-        "@types/node": "^25.3.0",
-        "@types/object.fromentries": "^2.0.4",
-        "auto-changelog": "^2.5.0",
-        "builtin-modules": "^5.0.0",
-        "dotenv": "^10.0.0",
-        "esbuild": "^0.27.3",
-        "esbuild-sass-plugin": "^3.3.1",
-        "sass-embedded": "^1.71.1",
-        "monkey-around": "^2.3.0",
-        "object.fromentries": "^2.0.8",
-        "obsidian": "^1.11.0",
-        "tslib": "^2.8.1",
-        "typescript": "^5.9.3"
-    },
-    "dependencies": {
-        "@fortawesome/free-brands-svg-icons": "^5.15.4"
+  "name": "obsidian-admonition",
+  "version": "11.0.3",
+  "description": "Enhanced callouts for Obsidian.md",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node ./esbuild.config.mjs",
+    "build": "node ./esbuild.config.mjs production",
+    "eslint": "npx eslint",
+    "fix": "npx @biomejs/biome check --write ./src",
+    "format": "npx @biomejs/biome format ./src",
+    "lint": "npx @biomejs/biome lint ./src",
+    "prebuild": "npx @biomejs/biome check ./src",
+    "preversion": "npm run build",
+    "version": "auto-changelog -p",
+    "brat-notes": "run() { auto-changelog --stdout --hide-credit --hide-empty-releases --template .github/changelog.hbs -v $1 --starting-version $1 > release-notes.md; }; run"
+  },
+  "auto-changelog": {
+    "backfillLimit": false,
+    "commitLimit": false,
+    "ignoreCommitPattern": "(🔖|🔨|🧹|changelog|release|Update README).*",
+    "replaceText": {
+      "([;.,] [rR]esolves) #\\d+\\.?\\s*$": "$1",
+      "([;.,] [Ff]ixes) #\\d+\\.?\\s*$": "$1"
     }
+  },
+  "keywords": [],
+  "author": "ebullient",
+  "license": "MIT",
+  "devDependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^5.15.1",
+    "@popperjs/core": "^2.9.2",
+    "@primer/octicons": "^19.22.0",
+    "@biomejs/biome": "2.3.15",
+    "@types/node": "^25.3.5",
+    "@types/object.fromentries": "^2.0.4",
+    "@typescript-eslint/parser": "^8.56.1",
+    "auto-changelog": "^2.5.0",
+    "builtin-modules": "^5.0.0",
+    "dotenv": "^10.0.0",
+    "esbuild": "^0.27.3",
+    "esbuild-sass-plugin": "^3.3.1",
+    "eslint-plugin-obsidianmd": "^0.1.9",
+    "sass-embedded": "^1.71.1",
+    "monkey-around": "^2.3.0",
+    "object.fromentries": "^2.0.8",
+    "obsidian": "^1.11.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@fortawesome/free-brands-svg-icons": "^5.15.4"
+  }
 }
