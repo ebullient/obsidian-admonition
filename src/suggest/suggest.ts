@@ -42,7 +42,7 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
             iconEl.removeClass("svg-inline--fa");
             iconEl.addClass("svg-icon");
         }
-        iconDiv.appendChild(iconEl ?? createDiv());
+        iconDiv.appendChild(iconEl ?? document.createElement("div"));
     }
     onTrigger(
         cursor: EditorPosition,
@@ -55,7 +55,7 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
         }
         // prefix is captured by subclass regex so its length is used as the offset,
         // correctly handling variants like `>[!` (len 3) vs `> [!` (len 4)
-        const [_, prefix, query] = match;
+        const [, prefix, query] = match;
 
         if (
             Object.keys(this.plugin.admonitions).find(
@@ -97,7 +97,7 @@ export class CalloutSuggest extends AdmonitionOrCalloutSuggester {
         const { editor, query, start, end } = this.context;
 
         const line = editor.getLine(end.line).slice(end.ch);
-        const [_, exists] = line.match(/^(\] ?)/) ?? [];
+        const [, exists] = line.match(/^(\] ?)/) ?? [];
 
         editor.replaceRange(
             `${text}] `,

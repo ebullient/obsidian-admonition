@@ -12,7 +12,7 @@ import {
     type IconPrefix,
 } from "@fortawesome/free-regular-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
-import { getIconIds, Notice, setIcon } from "obsidian";
+import { getIconIds, Notice, requestUrl, setIcon } from "obsidian";
 /* import { RPG } from "./rpgawesome"; */
 import type { AdmonitionIconDefinition, IconType } from "src/@types";
 import type ObsidianAdmonition from "src/main";
@@ -53,7 +53,7 @@ export class IconManager {
                     await this.plugin.app.vault.adapter.read(
                         `${this.plugin.app.plugins.getPluginFolder()}/obsidian-admonition/${icon}.json`,
                     ),
-                );
+                ) as Record<string, string>;
             }
         }
         this.setIconDefinitions();
@@ -88,9 +88,8 @@ export class IconManager {
     }
     async downloadIcon(pack: DownloadableIconPack) {
         try {
-            const icons: Record<string, string> = await (
-                await fetch(this.iconPath(pack))
-            ).json();
+            const response = await requestUrl(this.iconPath(pack));
+            const icons = response.json as Record<string, string>;
             this.plugin.data.icons.push(pack);
             this.plugin.data.icons = [...new Set(this.plugin.data.icons)];
             await this.plugin.app.vault.adapter.write(
@@ -142,15 +141,21 @@ export class IconManager {
             return img;
         }
         if (icon.type === "obsidian") {
-            const el = createDiv();
+            const el = document.createElement("div");
             setIcon(el, icon.name);
             return el;
         }
-        if (this.DOWNLOADED[icon.type as DownloadableIconPack]?.[icon.name]) {
-            const el = createDiv();
-            el.innerHTML =
-                this.DOWNLOADED[icon.type as DownloadableIconPack]?.[icon.name];
-            return el.children[0];
+        const packType = icon.type as DownloadableIconPack | undefined;
+        const svgString =
+            packType && icon.name
+                ? this.DOWNLOADED[packType]?.[icon.name]
+                : undefined;
+        if (svgString) {
+            const parsed = new DOMParser().parseFromString(
+                svgString,
+                "image/svg+xml",
+            );
+            return parsed.documentElement;
         }
         for (const prefix of ["fas", "far", "fab"] as IconPrefix[]) {
             const definition = findIconDefinition({

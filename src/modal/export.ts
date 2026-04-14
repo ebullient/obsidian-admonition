@@ -4,7 +4,7 @@ import type ObsidianAdmonition from "src/main";
 
 export default class Export extends Modal {
     constructor(public plugin: ObsidianAdmonition) {
-        super(app);
+        super(plugin.app);
     }
     admonitionDefinitions = Object.values(this.plugin.data.userAdmonitions);
 

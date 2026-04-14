@@ -46,9 +46,6 @@ declare module "obsidian" {
     interface MarkdownPreviewRenderer {
         onCheckboxClick: (evt: MouseEvent, el: HTMLInputElement) => void;
     }
-    namespace MarkdownPreviewRenderer {
-        function unregisterCodeBlockPostProcessor(lang: string): void;
-    }
     interface Editor {
         cm: {
             state: EditorState;
@@ -119,7 +116,7 @@ export default class ObsidianAdmonition extends Plugin {
     }
 
     async onload(): Promise<void> {
-        console.log("Obsidian Admonition loaded");
+        console.debug("Obsidian Admonition loaded");
 
         this.postprocessors = new Map();
 
@@ -145,7 +142,7 @@ export default class ObsidianAdmonition extends Plugin {
             /** Add generic commands. */
             this.addCommand({
                 id: "collapse-admonitions",
-                name: "Collapse admonitions",
+                name: "Collapse all",
                 checkCallback: (checking) => {
                     // checking if the command should appear in the Command Palette
                     if (checking) {
@@ -170,7 +167,7 @@ export default class ObsidianAdmonition extends Plugin {
             });
             this.addCommand({
                 id: "open-admonitions",
-                name: "Open admonitions",
+                name: "Open all",
                 checkCallback: (checking) => {
                     // checking if the command should appear in the Command Palette
                     if (checking) {
@@ -196,7 +193,7 @@ export default class ObsidianAdmonition extends Plugin {
             });
             this.addCommand({
                 id: "insert-admonition",
-                name: "Insert admonition",
+                name: "Insert",
                 editorCallback: (editor, _view) => {
                     const suggestor = new InsertAdmonitionModal(this);
                     suggestor.onClose = () => {
@@ -343,7 +340,7 @@ ${editor.getSelection()}
             }
             el.replaceWith(admonitionElement);
 
-            const view = app.workspace.getActiveViewOfType(MarkdownView);
+            const view = this.app.workspace.getActiveViewOfType(MarkdownView);
             if (view?.editor?.cm?.state?.field(editorLivePreviewField)) {
                 const editor = view.editor.cm;
                 admonitionElement.onClickEvent((ev) => {
@@ -372,9 +369,13 @@ ${editor.getSelection()}
                                         anchor: pos,
                                     },
                                 });
-                            } catch {}
+                            } catch {
+                                /* posAtDOM may throw if el is detached */
+                            }
                         }, 10);
-                    } catch {}
+                    } catch {
+                        /* ignore errors from setTimeout setup */
+                    }
                 });
             }
 
@@ -449,7 +450,7 @@ ${editor.getSelection()}
             const titleInnerEl = titleEl.createDiv(
                 "callout-title-inner admonition-title-content",
             );
-            MarkdownRenderer.render(
+            void MarkdownRenderer.render(
                 this.app,
                 title,
                 titleInnerEl,
@@ -509,7 +510,8 @@ ${editor.getSelection()}
                     admonitionElement.setAttribute("open", "open");
                 }
                 setImmediate(() => {
-                    MarkdownRenderer.renderMarkdown(
+                    void MarkdownRenderer.render(
+                        this.app,
                         content,
                         contentEl,
                         sourcePath,
@@ -523,7 +525,8 @@ ${editor.getSelection()}
                     }
                 });
             } else {
-                MarkdownRenderer.renderMarkdown(
+                void MarkdownRenderer.render(
+                    this.app,
                     content,
                     contentEl,
                     sourcePath,
@@ -568,7 +571,7 @@ ${editor.getSelection()}
             const copy = contentEl.createDiv("admonition-content-copy");
             setIcon(copy, "copy");
             copy.addEventListener("click", () => {
-                navigator.clipboard.writeText(content.trim()).then(() => {
+                void navigator.clipboard.writeText(content.trim()).then(() => {
                     new Notice("Admonition content copied to clipboard.");
                 });
             });
@@ -584,9 +587,11 @@ ${editor.getSelection()}
 
         /** Register an admonition code-block post processor for legacy support. */
         if (this.postprocessors.has(type)) {
-            MarkdownPreviewRenderer.unregisterCodeBlockPostProcessor(
-                `ad-${type}`,
-            );
+            (
+                MarkdownPreviewRenderer as typeof MarkdownPreviewRenderer & {
+                    unregisterCodeBlockPostProcessor(lang: string): void;
+                }
+            ).unregisterCodeBlockPostProcessor(`ad-${type}`);
         }
         this.postprocessors.set(
             type,
@@ -702,13 +707,16 @@ ${editor.getSelection()}
             this.unregisterCommandsFor(admonition);
         }
 
-        if (this.postprocessors.has(admonition.type)) {
-            MarkdownPreviewRenderer.unregisterPostProcessor(
-                this.postprocessors.get(admonition.type),
-            );
-            MarkdownPreviewRenderer.unregisterCodeBlockPostProcessor(
-                `ad-${admonition.type}`,
-            );
+        const postprocessor = this.postprocessors.get(admonition.type);
+        if (postprocessor) {
+            MarkdownPreviewRenderer.unregisterPostProcessor(postprocessor);
+            // unregisterCodeBlockPostProcessor is not part of the public API;
+            // there is no official way to unregister a code block processor by language name.
+            (
+                MarkdownPreviewRenderer as typeof MarkdownPreviewRenderer & {
+                    unregisterCodeBlockPostProcessor(lang: string): void;
+                }
+            ).unregisterCodeBlockPostProcessor(`ad-${admonition.type}`);
             this.postprocessors.delete(admonition.type);
         }
     }
@@ -741,7 +749,7 @@ ${editor.getSelection()}
         await this.saveData(dataToSave);
     }
     async loadSettings() {
-        const loaded: AdmonitionSettings = await this.loadData();
+        const loaded = (await this.loadData()) as AdmonitionSettings;
         this.data = Object.assign({}, DEFAULT_APP_SETTINGS, loaded);
 
         if (this.data.userAdmonitions) {
@@ -770,9 +778,11 @@ ${editor.getSelection()}
 
             for (const key of Object.keys(this.data.userAdmonitions)) {
                 const admonition = this.data.userAdmonitions[key];
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 if (admonition.styleWithCss === true) {
                     admonition.iconWithCss = true;
                     admonition.injectColor = false;
+                    // eslint-disable-next-line @typescript-eslint/no-deprecated
                     delete admonition.styleWithCss;
                 }
             }
@@ -789,7 +799,9 @@ ${editor.getSelection()}
             try {
                 await this.downloadIcon("rpg");
                 this.data.rpgDownloadedOnce = true;
-            } catch {}
+            } catch {
+                /* non-critical: proceed without rpg icons if download fails */
+            }
         }
 
         if (this.data.userAdmonitions) {
@@ -811,11 +823,9 @@ ${editor.getSelection()}
     // TODO: Implement syntax highlighting using the CodeMirror 6 extension API.
     // The previous CodeMirror 5 implementation (window.CodeMirror.defineMode /
     // workspace.iterateCodeMirrors) is no longer functional on modern Obsidian.
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     turnOnSyntaxHighlighting(_types: string[] = Object.keys(this.admonitions)) {
         // no-op until CM6 implementation is added
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     turnOffSyntaxHighlighting(
         _types: string[] = Object.keys(this.admonitions),
     ) {
@@ -823,7 +833,7 @@ ${editor.getSelection()}
     }
 
     onunload() {
-        console.log("Obsidian Admonition unloaded");
+        console.debug("Obsidian Admonition unloaded");
         this.postprocessors = null;
         this.turnOffSyntaxHighlighting();
     }

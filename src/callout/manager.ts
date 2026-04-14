@@ -1,5 +1,6 @@
 import {
     Component,
+    type MarkdownPostProcessor,
     type MarkdownPostProcessorContext,
     Notice,
     setIcon,
@@ -37,7 +38,7 @@ export default class CalloutManager extends Component {
         this.plugin.registerEditorSuggest(new CalloutSuggest(this.plugin));
 
         this.plugin.registerMarkdownPostProcessor(
-            this.calloutProcessor.bind(this),
+            this.calloutProcessor.bind(this) as MarkdownPostProcessor,
         );
     }
     heights: Array<keyof Heights> = [
@@ -79,7 +80,7 @@ export default class CalloutManager extends Component {
                 const copy = content.createDiv("admonition-content-copy");
                 setIcon(copy, "copy");
                 copy.addEventListener("click", () => {
-                    navigator.clipboard
+                    void navigator.clipboard
                         .writeText(
                             text
                                 .split("\n")
@@ -87,7 +88,7 @@ export default class CalloutManager extends Component {
                                 .join("\n")
                                 .replace(/^> /gm, ""),
                         )
-                        .then(async () => {
+                        .then(() => {
                             new Notice("Callout content copied to clipboard.");
                         });
                 });
@@ -152,9 +153,11 @@ export default class CalloutManager extends Component {
         this.getComputedHeights(content);
 
         if (collapsed) {
+            const zeroHeights: Partial<CSSStyleDeclaration> = {};
             for (const prop of this.heights) {
-                content.style.setProperty(prop, "0px");
+                (zeroHeights as Record<string, string>)[prop] = "0px";
             }
+            content.setCssStyles(zeroHeights);
         }
         titleEl.onclick = (event: MouseEvent) => {
             this.collapse(callout, event);
@@ -171,10 +174,9 @@ export default class CalloutManager extends Component {
             content.style.removeProperty("transition");
         }
         content.addEventListener("transitionend", transitionEnd);
-        content.style.setProperty(
-            "transition",
-            "all 100ms cubic-bezier(.02, .01, .47, 1)",
-        );
+        content.setCssStyles({
+            transition: "all 100ms cubic-bezier(.02, .01, .47, 1)",
+        });
         const collapsed = callout.hasClass("is-collapsed");
 
         if (!event || event.button === 0) {
@@ -220,12 +222,12 @@ export default class CalloutManager extends Component {
         }
 
         if (this.plugin.isIconWithCss(admonition)) {
-            this.updateSnippet();
+            void this.updateSnippet();
             return;
         }
 
         if (!admonition.icon) {
-            this.updateSnippet();
+            void this.updateSnippet();
             return;
         }
         let rule: string;
@@ -252,7 +254,7 @@ export default class CalloutManager extends Component {
         }
         this.indexing = [...this.indexing.filter((t) => t !== type), type];
         this.sheet.insertRule(rule, this.sheet.cssRules.length);
-        this.updateSnippet();
+        void this.updateSnippet();
     }
     indexing: string[] = [];
     removeAdmonition(admonition: Admonition) {
@@ -260,7 +262,7 @@ export default class CalloutManager extends Component {
         const index = this.indexing.indexOf(admonition.type);
         this.sheet.deleteRule(index);
         this.indexing.splice(index, 1);
-        this.updateSnippet();
+        void this.updateSnippet();
     }
     style = document.head.createEl("style", {
         attr: { id: "ADMONITIONS_CUSTOM_STYLE_SHEET" },
@@ -280,7 +282,7 @@ export default class CalloutManager extends Component {
     }
     setUseSnippet() {
         if (this.plugin.data.useSnippet) {
-            this.updateSnippet();
+            void this.updateSnippet();
         } else {
             this.plugin.app.customCss.setCssEnabledStatus(
                 this.plugin.data.snippetPath,

@@ -11,7 +11,7 @@
         "moduleResolution": "nodenext",
         "esModuleInterop": true,
         "importHelpers": true,
-        "lib": ["dom", "es5", "scripthost", "es2019"]
+        "lib": ["dom", "es5", "scripthost", "es2019", "es2022"]
     },
     "include": ["**/*.ts", "**/*.js"]
 }

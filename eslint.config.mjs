@@ -20,13 +20,28 @@ export default defineConfig([
             parserOptions: {
                 project: "./tsconfig.json"
             },
-            globals: { ...globals.node, ...globals.browser },
+            globals: {
+                ...globals.node,
+                ...globals.browser,
+                // Obsidian global DOM augmentations (declared in obsidian.d.ts global namespace)
+                createEl: "readonly",
+                createDiv: "readonly",
+                createSpan: "readonly",
+                createSvg: "readonly",
+                createFragment: "readonly",
+                fish: "readonly",
+                fishAll: "readonly",
+                ajax: "readonly",
+                ajaxPromise: "readonly",
+                activeWindow: "readonly",
+                activeDocument: "readonly",
+            },
         },
         rules: {
             "obsidianmd/ui/sentence-case": [
                 "warn",
                 {
-                    brands: ["collapse: none", "Microsoft", "Document"],
+                    brands: ["collapse: none", "note", "abstract", "title"],
                     acronyms: [],
                     enforceCamelCaseLower: true,
                 },

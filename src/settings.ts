@@ -10,19 +10,19 @@ import {
     type TextComponent,
 } from "obsidian";
 import { t9n } from "src/lang/helpers";
-import type {
-    Admonition,
-    AdmonitionIconDefinition,
-    AdmonitionIconName,
-    AdmonitionIconType,
-} from "./@types";
+import type { Admonition, AdmonitionIconDefinition } from "./@types";
 import { type DownloadableIconPack, DownloadableIcons } from "./icons/packs";
 import type ObsidianAdmonition from "./main";
 import { IconSuggestionModal } from "./modal";
 import { confirmWithModal } from "./modal/confirm";
 import Export from "./modal/export";
 import { ADD_COMMAND_NAME, REMOVE_COMMAND_NAME } from "./util";
-import { AdmonitionValidator } from "./util/validator";
+import {
+    validate,
+    validateIcon,
+    validateImport,
+    validateType,
+} from "./util/validator";
 
 export default class AdmonitionSetting extends PluginSettingTab {
     additionalEl: HTMLDivElement;
@@ -108,7 +108,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
             .addToggle((t) =>
                 t.setValue(this.plugin.data.useSnippet).onChange((v) => {
                     this.plugin.data.useSnippet = v;
-                    this.plugin.saveSettings();
+                    void this.plugin.saveSettings();
                     this.plugin.calloutManager.setUseSnippet();
                 }),
             );
@@ -123,7 +123,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                     .onClick(async () => {
                         const modal = new SettingsModal(this.plugin);
 
-                        modal.onClose = async () => {
+                        modal.onClose = () => {
                             if (modal.saved) {
                                 const admonition = {
                                     type: modal.type,
@@ -136,7 +136,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                     noTitle: modal.noTitle,
                                     copy: modal.copy,
                                 };
-                                await this.plugin.addAdmonition(admonition);
+                                void this.plugin.addAdmonition(admonition);
 
                                 this.plugin.calloutManager.addAdmonition(
                                     admonition,
@@ -168,9 +168,13 @@ export default class AdmonitionSetting extends PluginSettingTab {
 
                     if (!files.length) return;
                     try {
-                        const data: Admonition[][] | Admonition[] = [];
+                        const data: (Admonition[] | Admonition)[] = [];
                         for (const file of Array.from(files)) {
-                            data.push(JSON.parse(await file.text()));
+                            data.push(
+                                JSON.parse(await file.text()) as
+                                    | Admonition[]
+                                    | Admonition,
+                            );
                         }
                         for (const item of data.flat()) {
                             if (typeof item !== "object") continue;
@@ -181,10 +185,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                     type: "font-awesome",
                                 };
                             }
-                            const valid = AdmonitionValidator.validateImport(
-                                this.plugin,
-                                item,
-                            );
+                            const valid = validateImport(this.plugin, item);
                             if (valid.success === false) {
                                 new Notice(
                                     createFragment((e) => {
@@ -203,7 +204,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                         e.createSpan({
                                             text: `There was an issue importing the ${item.type} admonition:`,
                                         });
-                                        for (const message of valid.messages) {
+                                        for (const message of valid.messages ??
+                                            []) {
                                             e.createEl("br");
                                             e.createSpan({
                                                 text: message,
@@ -277,7 +279,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
 
         const div = this.containerEl.createDiv("coffee");
         div.createEl("a", {
-            href: "https://www.buymeacoffee.com/valentine195",
+            href: "https://www.buymeacoffee.com/ebullient",
         }).createEl("img", {
             attr: {
                 src: "https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=valentine195&button_colour=e3e7ef&font_colour=262626&font_family=Inter&outline_colour=262626&coffee_colour=ff0000",
@@ -401,7 +403,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
 
                         await this.plugin.saveSettings();
 
-                        await this.buildTypes();
+                        this.buildTypes();
                     }),
             );
         new Setting(containerEl)
@@ -413,7 +415,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
 
                     await this.plugin.saveSettings();
 
-                    await this.buildTypes();
+                    this.buildTypes();
                 }),
             );
     }
@@ -431,7 +433,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 t.setValue(this.plugin.data.useFontAwesome).onChange((v) => {
                     this.plugin.data.useFontAwesome = v;
                     this.plugin.iconManager.setIconDefinitions();
-                    this.plugin.saveSettings();
+                    void this.plugin.saveSettings();
                 });
             });
 
@@ -602,7 +604,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                             );
 
                                         this.plugin.data.userAdmonitions =
-                                            Object.fromEntries(
+                                            Object.fromEntries<Admonition>(
                                                 existing.map(([type, def]) => {
                                                     if (
                                                         type === admonition.type
@@ -640,7 +642,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                     b.setIcon("trash")
                         .setTooltip(t9n("btn.delete"))
                         .onClick(() => {
-                            this.plugin.removeAdmonition(admonition);
+                            void this.plugin.removeAdmonition(admonition);
                             this.display();
                         });
                 });
@@ -718,7 +720,7 @@ class SettingsModal extends Modal {
             .addText((text) => {
                 typeText = text;
                 typeText.setValue(this.type).onChange((v) => {
-                    const valid = AdmonitionValidator.validateType(
+                    const valid = validateType(
                         v,
                         this.plugin,
                         this.originalType,
@@ -819,10 +821,7 @@ class SettingsModal extends Modal {
                         return;
                     }
                     const v = text.inputEl.value;
-                    const valid = AdmonitionValidator.validateIcon(
-                        { name: v },
-                        this.plugin,
-                    );
+                    const valid = validateIcon({ name: v }, this.plugin);
                     if (valid.success === false) {
                         SettingsModal.setValidationError(
                             text.inputEl,
@@ -834,8 +833,8 @@ class SettingsModal extends Modal {
                     SettingsModal.removeValidationError(text.inputEl);
                     const ic = this.plugin.iconManager.getIconType(v);
                     this.icon = {
-                        name: v as AdmonitionIconName,
-                        type: ic as AdmonitionIconType,
+                        name: v,
+                        type: ic,
                     };
 
                     const iconEl = this.admonitionPreview.querySelector(
@@ -855,7 +854,7 @@ class SettingsModal extends Modal {
 
                 modal.onSelect((item) => {
                     text.inputEl.value = item.item.name;
-                    validate();
+                    void validate();
                     modal.close();
                 });
 
@@ -873,7 +872,7 @@ class SettingsModal extends Modal {
                     .setValue(!this.iconWithCss)
                     .onChange((v) => {
                         this.iconWithCss = !v;
-                        this.display();
+                        void this.display();
                     });
             });
 
@@ -915,12 +914,14 @@ class SettingsModal extends Modal {
                             name: canvas.toDataURL("image/png"),
                             type: "image",
                         };
-                        this.display();
+                        void this.display();
                     } catch {
                         new Notice(t9n("error.image-parse"));
                     }
                 };
-                image.src = evt.target.result.toString();
+                const result = evt.target?.result;
+                if (typeof result !== "string") return;
+                image.src = result;
             };
             reader.readAsDataURL(image);
 
@@ -941,12 +942,12 @@ class SettingsModal extends Modal {
                         icon.name = iconText.inputEl.value;
                     }
                     const valid = this.iconWithCss
-                        ? AdmonitionValidator.validateType(
+                        ? validateType(
                               typeText.inputEl.value,
                               this.plugin,
                               this.originalType,
                           )
-                        : AdmonitionValidator.validate(
+                        : validate(
                               this.plugin,
                               typeText.inputEl.value,
                               icon,
@@ -1030,7 +1031,7 @@ class SettingsModal extends Modal {
     }
 
     onOpen() {
-        this.display();
+        void this.display();
     }
 
     static setValidationError(textInput: HTMLInputElement, message?: string) {
@@ -1043,15 +1044,15 @@ class SettingsModal extends Modal {
             textInput.parentElement.parentElement.addClass(
                 ".unset-align-items",
             );
-            let mDiv = textInput.parentElement.querySelector(
-                ".invalid-feedback",
-            ) as HTMLDivElement;
+            let mDiv =
+                textInput.parentElement.querySelector<HTMLDivElement>(
+                    ".invalid-feedback",
+                );
 
             if (!mDiv) {
                 mDiv = textInput.parentElement.createDiv({
                     cls: "invalid-feedback",
                 });
-            } else {
             }
             mDiv.setText(message);
         }

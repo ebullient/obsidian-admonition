@@ -20,31 +20,36 @@ export class IconSuggestionModal extends FuzzyInputSuggest<AdmonitionIconDefinit
     ) {
         super(plugin.app, input, items);
     }
-    renderNote(
+    renderNote = (
         noteEL: HTMLElement,
         result: FuzzyMatch<AdmonitionIconDefinition>,
-    ): void {
+    ): void => {
         noteEL.setText(this.plugin.iconManager.getIconModuleName(result.item));
-    }
+    };
     renderTitle(
         titleEl: HTMLElement,
         result: FuzzyMatch<AdmonitionIconDefinition>,
     ): void {
-        renderMatches(titleEl, result.item.name, result.match.matches);
+        renderMatches(
+            titleEl,
+            result.item.name || "note",
+            result.match.matches,
+        );
     }
-    renderFlair(
+    renderFlair = (
         flairEl: HTMLElement,
         result: FuzzyMatch<AdmonitionIconDefinition>,
-    ): void {
+    ): void => {
         const { item } = result;
 
         flairEl.appendChild(
-            this.plugin.iconManager.getIconNode(item) ?? createDiv(),
+            this.plugin.iconManager.getIconNode(item) ??
+                document.createElement("div"),
         );
-    }
+    };
 
     getItemText(item: AdmonitionIconDefinition) {
-        return item.name;
+        return item.name || "note";
     }
 }
 class AdmonitionSuggestionModal extends FuzzyInputSuggest<Admonition> {
@@ -62,7 +67,8 @@ class AdmonitionSuggestionModal extends FuzzyInputSuggest<Admonition> {
         const { item } = result;
         flairEl
             .appendChild(
-                this.plugin.iconManager.getIconNode(item.icon) ?? createDiv(),
+                this.plugin.iconManager.getIconNode(item.icon) ??
+                    document.createElement("div"),
             )
             .setAttribute("color", `rgb(${item.color})`);
     }
@@ -207,7 +213,9 @@ export class InsertAdmonitionModal extends Modal {
                     .onClick(() => this.close());
                 b.extraSettingsEl.setAttr("tabindex", 0);
                 b.extraSettingsEl.onkeydown = (evt) => {
-                    evt.key === "Enter" && this.close();
+                    if (evt.key === "Enter") {
+                        this.close();
+                    }
                 };
             });
     }

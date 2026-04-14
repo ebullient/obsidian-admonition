@@ -1,6 +1,4 @@
-import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { DownloadableIconPack } from "src/icons/manager";
-import { ObsidianIconNames } from "src/icons/obsidian";
 
 export interface Admonition {
     type: string;
@@ -45,7 +43,7 @@ export interface AdmonitionSettings {
 
 export type AdmonitionIconDefinition = {
     type?: IconType;
-    name?: IconName | ObsidianIconNames | string;
+    name?: string;
 };
 
 export type IconType =
