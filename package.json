@@ -33,7 +33,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@popperjs/core": "^2.9.2",
     "@primer/octicons": "^19.22.0",
-    "@biomejs/biome": "2.3.15",
+    "@biomejs/biome": "2.4.7",
     "@types/node": "^25.3.5",
     "@types/object.fromentries": "^2.0.4",
     "@typescript-eslint/parser": "^8.56.1",
