@@ -16,7 +16,7 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = process.argv[2] === "production";
 
-const rawDir = prod ? "./build" : process.env.OUTDIR;
+const rawDir = prod ? "./build" : (process.env.OUTDIR || "./build");
 
 // If rawDir is (or contains) a symlink, resolve it to the real path and
 // pre-create the target so esbuild's internal mkdir doesn't fail.
