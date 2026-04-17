@@ -43,11 +43,14 @@ export default class CalloutManager extends Component {
     calloutProcessor(el: HTMLElement, ctx: MarkdownPostProcessorContext) {
         const callout = el?.querySelector<HTMLDivElement>(".callout");
         if (!callout) return;
-        //apply metadata
 
-        const type = callout.dataset.callout;
+        //apply metadata
+        const type = callout.dataset.callout?.toLowerCase() || "note";
         const admonition = this.plugin.admonitions[type];
         if (!admonition) return;
+        if (callout.dataset.callout !== type) {
+            callout.dataset.callout = type;
+        }
 
         const titleEl = callout.querySelector<HTMLDivElement>(".callout-title");
         const content =
