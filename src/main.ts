@@ -597,13 +597,19 @@ ${editor.getSelection()}
             this.turnOnSyntaxHighlighting([type]);
         }
 
-        /** Register an admonition code-block post processor for legacy support. */
+        /** Register an admonition code-block post processor */
+        const titleCase = type[0].toUpperCase() + type.slice(1);
         if (this.postprocessors.has(type)) {
             (
                 MarkdownPreviewRenderer as typeof MarkdownPreviewRenderer & {
                     unregisterCodeBlockPostProcessor(lang: string): void;
                 }
             ).unregisterCodeBlockPostProcessor(`ad-${type}`);
+            if (titleCase !== type) {
+                MarkdownPreviewRenderer.unregisterCodeBlockPostProcessor(
+                    `ad-${titleCase}`,
+                );
+            }
         }
         this.postprocessors.set(
             type,
@@ -612,6 +618,12 @@ ${editor.getSelection()}
                 (src, el, ctx) => this.postprocessor(type, src, el, ctx),
             ),
         );
+        if (titleCase !== type) {
+            this.registerMarkdownCodeBlockProcessor(
+                `ad-${titleCase}`,
+                (src, el, ctx) => this.postprocessor(type, src, el, ctx),
+            );
+        }
         const admonition = this.admonitions[type];
         if (admonition.command) {
             this.registerCommandsFor(admonition);
