@@ -3,8 +3,8 @@ import { DownloadableIconPack } from "src/icons/manager";
 export interface Admonition {
     type: string;
     title?: string;
-    icon: AdmonitionIconDefinition;
-    color: string;
+    icon?: AdmonitionIconDefinition;
+    color?: string;
     command: boolean;
     iconWithCss?: boolean;
     injectColor?: boolean;

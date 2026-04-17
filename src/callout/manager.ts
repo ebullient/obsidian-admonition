@@ -217,32 +217,33 @@ export default class CalloutManager extends Component {
             return;
         }
 
-        if (!admonition.icon) {
-            void this.updateSnippet();
-            return;
-        }
-        let rule: string;
         const color = this.plugin.shouldInjectColor(admonition)
             ? `--callout-color: ${admonition.color};`
             : "";
-        if (admonition.icon.type === "obsidian") {
-            rule = `.callout[data-callout="${type}"] {
-    ${color}
-    --callout-icon: ${
-        admonition.icon.name
-    };  /* Icon name from the Obsidian Icon Set */
-}`;
-        } else {
-            rule = `.callout[data-callout="${type}"] {
-       ${color}
-        --callout-icon: "${(
-            this.plugin.iconManager.getIconNode(admonition.icon)?.outerHTML ??
-            ""
-        )
-            .replace(/(width|height)=(\\?"|')\d+(\\?"|')/g, "")
-            .replace(/"/g, '\\"')}";
-    }`;
+
+        let iconCss = "";
+        if (admonition.icon?.name && admonition.icon?.type) {
+            if (admonition.icon.type === "obsidian") {
+                iconCss = `--callout-icon: ${admonition.icon.name};  /* Icon name from the Obsidian Icon Set */`;
+            } else {
+                iconCss = `--callout-icon: "${(
+                    this.plugin.iconManager.getIconNode(admonition.icon)
+                        ?.outerHTML ?? ""
+                )
+                    .replace(/(width|height)=(\\?"|')\d+(\\?"|')/g, "")
+                    .replace(/"/g, '\\"')}";`;
+            }
         }
+
+        if (!color && !iconCss) {
+            void this.updateSnippet();
+            return;
+        }
+
+        const rule = `.callout[data-callout="${type}"] {
+    ${color}
+    ${iconCss}
+}`;
         this.indexing = [...this.indexing.filter((t) => t !== type), type];
         this.sheet.insertRule(rule, this.sheet.cssRules.length);
         void this.updateSnippet();

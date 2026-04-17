@@ -2,12 +2,17 @@
 
 Each canonical type is shown with its aliases directly below. All should render with the same icon and color.
 
+Colors and icons are defined by Obsidian's default CSS (app-1.13.0.css) and should not be overridden by this plugin for built-in types.
+
 ---
 
 ## note / seealso
 
+> [!note]
+> Callout
+
 ```ad-note
-Default color: rgb(68, 138, 255) — blue. Icon: pencil-alt.
+Obsidian default: blue (--color-blue). Icon: lucide-pencil.
 ```
 
 ```ad-seealso
@@ -18,8 +23,11 @@ title: seealso
 
 ## abstract / summary / tldr
 
+> [!abstract]
+> Callout
+
 ```ad-abstract
-Default color: rgb(0, 176, 255) — light blue. Icon: book.
+Obsidian default: cyan (--color-cyan). Icon: lucide-clipboard-list.
 ```
 
 ```ad-summary
@@ -34,20 +42,29 @@ title: tldr
 
 ## info / todo
 
+> [!info]
+> Callout
+
 ```ad-info
-Default color: rgb(0, 184, 212) — cyan. Icon: info-circle.
+Obsidian default: blue (--color-blue). Icon: lucide-info.
 ```
 
+> [!todo]
+> Callout
+
 ```ad-todo
-title: todo
+Obsidian default: blue (--color-blue). Icon: lucide-check-circle-2.
 ```
 
 ---
 
 ## tip / hint / important
 
+> [!tip]
+> Callout
+
 ```ad-tip
-Default color: rgb(0, 191, 165) — teal. Icon: fire.
+Obsidian default: cyan (--color-cyan). Icon: lucide-flame.
 ```
 
 ```ad-hint
@@ -62,8 +79,11 @@ title: important
 
 ## success / check / done
 
+> [!success]
+> Callout
+
 ```ad-success
-Default color: rgb(0, 200, 83) — green. Icon: check-circle.
+Obsidian default: green (--color-green). Icon: lucide-check.
 ```
 
 ```ad-check
@@ -78,8 +98,11 @@ title: done
 
 ## question / help / faq
 
+> [!question]
+> Callout
+
 ```ad-question
-Default color: rgb(100, 221, 23) — yellow-green. Icon: question-circle.
+Obsidian default: orange (--color-orange). Icon: help-circle.
 ```
 
 ```ad-help
@@ -94,8 +117,11 @@ title: faq
 
 ## warning / caution / attention
 
+> [!warning]
+> Callout
+
 ```ad-warning
-Default color: rgb(255, 145, 0) — orange. Icon: exclamation-triangle.
+Obsidian default: orange (--color-orange). Icon: lucide-alert-triangle.
 ```
 
 ```ad-caution
@@ -110,8 +136,11 @@ title: attention
 
 ## failure / fail / missing
 
+> [!failure]
+> Callout
+
 ```ad-failure
-Default color: rgb(255, 82, 82) — light red. Icon: times-circle.
+Obsidian default: red (--color-red). Icon: lucide-x.
 ```
 
 ```ad-fail
@@ -126,8 +155,11 @@ title: missing
 
 ## danger / error
 
+> [!danger]
+> Callout
+
 ```ad-danger
-Default color: rgb(255, 23, 68) — red. Icon: bolt.
+Obsidian default: red (--color-red). Icon: lucide-zap.
 ```
 
 ```ad-error
@@ -138,24 +170,33 @@ title: error
 
 ## bug
 
+> [!bug]
+> Callout
+
 ```ad-bug
-Default color: rgb(245, 0, 87) — pink-red. Icon: bug.
+Obsidian default: red (--color-red). Icon: lucide-bug.
 ```
 
 ---
 
 ## example
 
+> [!example]
+> Callout
+
 ```ad-example
-Default color: rgb(124, 77, 255) — purple. Icon: list-ol.
+Obsidian default: purple (--color-purple). Icon: lucide-list.
 ```
 
 ---
 
 ## quote / cite
 
+> [!quote]
+> Callout
+
 ```ad-quote
-Default color: rgb(158, 158, 158) — grey. Icon: quote-right.
+Obsidian default: grey (oklch(0.7 0 0)). Icon: quote-glyph.
 ```
 
 ```ad-cite

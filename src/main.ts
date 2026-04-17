@@ -112,6 +112,9 @@ export default class ObsidianAdmonition extends Plugin {
     }
 
     shouldInjectColor(admonition: Admonition): boolean {
+        if (!admonition.color) {
+            return false;
+        }
         if (admonition.injectColor !== undefined) {
             return admonition.injectColor;
         }
