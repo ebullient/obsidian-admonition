@@ -8,6 +8,10 @@ The admonition type name becomes the title (capitalized).
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 ```
 
+```ad-Note
+case-insensitive admonition name
+```
+
 ---
 
 ## title: — Custom title
