@@ -472,8 +472,7 @@ ${editor.getSelection()}
                 renderer,
             );
             if (
-                titleInnerEl.firstElementChild &&
-                titleInnerEl.firstElementChild instanceof HTMLParagraphElement
+                titleInnerEl.firstElementChild?.instanceOf(HTMLParagraphElement)
             ) {
                 titleInnerEl.setChildrenInPlace(
                     Array.from(titleInnerEl.firstElementChild.childNodes),
@@ -520,7 +519,7 @@ ${editor.getSelection()}
             );
             if (/^`{3,}mermaid/m.test(content)) {
                 const wasCollapsed = !admonitionElement.hasAttribute("open");
-                if (admonitionElement instanceof HTMLDetailsElement) {
+                if (admonitionElement.instanceOf(HTMLDetailsElement)) {
                     admonitionElement.setAttribute("open", "open");
                 }
                 setImmediate(() => {
@@ -532,7 +531,7 @@ ${editor.getSelection()}
                         markdownRenderChild,
                     );
                     if (
-                        admonitionElement instanceof HTMLDetailsElement &&
+                        admonitionElement.instanceOf(HTMLDetailsElement) &&
                         wasCollapsed
                     ) {
                         admonitionElement.removeAttribute("open");
@@ -609,9 +608,11 @@ ${editor.getSelection()}
                 }
             ).unregisterCodeBlockPostProcessor(`ad-${type}`);
             if (titleCase !== type) {
-                MarkdownPreviewRenderer.unregisterCodeBlockPostProcessor(
-                    `ad-${titleCase}`,
-                );
+                (
+                    MarkdownPreviewRenderer as typeof MarkdownPreviewRenderer & {
+                        unregisterCodeBlockPostProcessor(lang: string): void;
+                    }
+                ).unregisterCodeBlockPostProcessor(`ad-${titleCase}`);
             }
         }
         this.postprocessors.set(

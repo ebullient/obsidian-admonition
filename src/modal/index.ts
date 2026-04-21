@@ -44,7 +44,7 @@ export class IconSuggestionModal extends FuzzyInputSuggest<AdmonitionIconDefinit
 
         flairEl.appendChild(
             this.plugin.iconManager.getIconNode(item) ??
-                document.createElement("div"),
+                activeDocument.createElement("div"),
         );
     };
 
@@ -68,7 +68,7 @@ class AdmonitionSuggestionModal extends FuzzyInputSuggest<Admonition> {
         flairEl
             .appendChild(
                 this.plugin.iconManager.getIconNode(item.icon) ??
-                    document.createElement("div"),
+                    activeDocument.createElement("div"),
             )
             .setAttribute("color", `rgb(${item.color})`);
     }

@@ -21,7 +21,7 @@ export const isSelectorValid = ((dummyElement) => (selector: string) => {
         return false;
     }
     return true;
-})(document.createDocumentFragment());
+})(activeDocument.createDocumentFragment());
 
 export function validateImport(
     plugin: ObsidianAdmonition,

@@ -26,7 +26,9 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
         el: HTMLElement,
     ) {
         el.addClasses(["admonition-suggester-item", "mod-complex"]);
-        el.style.setProperty("--callout-color", item.color);
+        if (item.color) {
+            el.style.setProperty("--callout-color", item.color);
+        }
         el.createSpan({ text });
         const iconDiv = el.createDiv("suggestion-aux").createDiv({
             cls: "suggestion-flair",
@@ -34,20 +36,27 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
                 style: "color: var(--callout-color)",
             },
         });
-        let iconEl = this.plugin.iconManager.getIconNode(item.icon);
-        // Unpack the icon if it's an Obsidian one, as they're wrapped with an extra <div>
-        if (iconEl instanceof HTMLDivElement && iconEl.childElementCount === 1)
-            iconEl = iconEl.firstElementChild;
-        else if (iconEl !== null) {
-            iconEl.removeClass("svg-inline--fa");
-            iconEl.addClass("svg-icon");
+        if (item.icon) {
+            let iconEl: Element | null = this.plugin.iconManager.getIconNode(
+                item.icon,
+            );
+            // Unpack the icon if it's an Obsidian one, as they're wrapped with an extra <div>
+            if (
+                iconEl?.instanceOf(HTMLDivElement) &&
+                iconEl.childElementCount === 1
+            )
+                iconEl = iconEl.firstElementChild;
+            else if (iconEl !== null) {
+                iconEl.removeClass("svg-inline--fa");
+                iconEl.addClass("svg-icon");
+            }
+            iconDiv.appendChild(iconEl ?? activeDocument.createElement("div"));
         }
-        iconDiv.appendChild(iconEl ?? document.createElement("div"));
     }
     onTrigger(
         cursor: EditorPosition,
         editor: Editor,
-    ): EditorSuggestTriggerInfo {
+    ): EditorSuggestTriggerInfo | null {
         const line = editor.getLine(cursor.line);
         const match = this.testAndReturnQuery(line, cursor);
         if (!match) {

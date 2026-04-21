@@ -134,14 +134,17 @@ export class IconManager {
         if (icon.type === "image") return;
         if (icon.type in DownloadableIcons) return DownloadableIcons[icon.type];
     }
-    getIconNode(icon: AdmonitionIconDefinition): Element {
+    getIconNode(icon: AdmonitionIconDefinition): Element | null {
+        if (!icon.name) {
+            return null;
+        }
         if (icon.type === "image") {
             const img = new Image();
             img.src = icon.name;
             return img;
         }
         if (icon.type === "obsidian") {
-            const el = document.createElement("div");
+            const el = activeDocument.createElement("div");
             setIcon(el, icon.name);
             return el;
         }
@@ -164,5 +167,6 @@ export class IconManager {
             });
             if (definition) return getFAIcon(definition).node[0];
         }
+        return null;
     }
 }

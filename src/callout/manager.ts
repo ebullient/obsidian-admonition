@@ -23,7 +23,7 @@ export default class CalloutManager extends Component {
 
     onload() {
         //build sheet for custom admonitions
-        document.head.appendChild(this.style);
+        activeDocument.head.appendChild(this.style);
 
         for (const admonition of Object.values(
             this.plugin.data.userAdmonitions,
@@ -46,7 +46,7 @@ export default class CalloutManager extends Component {
         //apply metadata
 
         const type = callout.dataset.callout;
-        const admonition = this.plugin.admonitions[type];
+        const admonition = type ? this.plugin.admonitions[type] : undefined;
         if (!admonition) return;
 
         const titleEl = callout.querySelector<HTMLDivElement>(".callout-title");
@@ -256,7 +256,7 @@ export default class CalloutManager extends Component {
         this.indexing.splice(index, 1);
         void this.updateSnippet();
     }
-    style = document.head.createEl("style", {
+    style = activeDocument.head.createEl("style", {
         attr: { id: "ADMONITIONS_CUSTOM_STYLE_SHEET" },
     });
     get sheet() {

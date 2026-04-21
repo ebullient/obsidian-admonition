@@ -365,7 +365,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                     this.plugin.data.copyButton = v;
 
                     if (!v) {
-                        document
+                        activeDocument
                             .querySelectorAll(".admonition-content-copy")
                             .forEach((el) => {
                                 el.detach();
@@ -891,7 +891,7 @@ class SettingsModal extends Modal {
                 image.onload = () => {
                     try {
                         // Resize the image
-                        const canvas = document.createElement("canvas");
+                        const canvas = activeDocument.createElement("canvas");
                         const max_size = 24;
                         let width = image.width;
                         let height = image.height;
