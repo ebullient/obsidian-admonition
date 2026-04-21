@@ -21,9 +21,9 @@ Cornflower blue via RGB triad.
 ## rgb() function
 
 ```ad-note
-title: color: rgb(255, 140, 0)
-color: rgb(255, 140, 0)
-Dark orange via `rgb()` function notation.
+title: color: rgb(0, 0, 128)
+color: rgb(0, 0, 128)
+Navy blue via `rgb()` function notation.
 ```
 
 ---
@@ -53,14 +53,14 @@ Forest green via HSL.
 Both `hsb()` and `hsv()` are accepted (they are equivalent).
 
 ```ad-note
-title: color: hsb(200, 70%, 90%)
-color: hsb(200, 70%, 90%)
-Steel blue via HSB.
+title: color: hsb(300, 100%, 100%)
+color: hsb(300, 100%, 100%)
+Magenta via HSB.
 ```
 
 ```ad-note
-title: color: hsv(30, 80%, 95%)
-color: hsv(30, 80%, 95%)
+title: color: hsv(25, 70%, 65%)
+color: hsv(25, 70%, 65%)
 Sandy brown via HSV (same format as HSB).
 ```
 
