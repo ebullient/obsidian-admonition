@@ -144,6 +144,11 @@ export class IconManager {
             return img;
         }
         if (icon.type === "obsidian") {
+            // Can not use createEl or createDiv here:
+            // VM1242 plugin:obsidian-admonition:585 HierarchyRequestError: Failed to execute 'appendChild' on 'Node': Only one element on document allowed.
+            // at enhance.js:1:9665
+            // at HTMLDocument.createEl (enhance.js:1:8610)
+            // at l2.getIconNode (plugin:obsidian-admonition:575:1600758)
             const el = activeDocument.createElement("div");
             setIcon(el, icon.name);
             return el;

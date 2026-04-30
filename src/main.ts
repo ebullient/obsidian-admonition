@@ -373,7 +373,7 @@ ${editor.getSelection()}
                         return;
                     }
                     try {
-                        setTimeout(() => {
+                        activeWindow.setTimeout(() => {
                             try {
                                 const pos = editor.posAtDOM(admonitionElement);
                                 editor.focus();
