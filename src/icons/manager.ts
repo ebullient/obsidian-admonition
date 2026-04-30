@@ -134,8 +134,8 @@ export class IconManager {
         if (icon.type === "image") return;
         if (icon.type in DownloadableIcons) return DownloadableIcons[icon.type];
     }
-    getIconNode(icon: AdmonitionIconDefinition): Element | null {
-        if (!icon.name) {
+    getIconNode(icon: AdmonitionIconDefinition | undefined): Element | null {
+        if (!icon || !icon.name) {
             return null;
         }
         if (icon.type === "image") {
@@ -144,7 +144,7 @@ export class IconManager {
             return img;
         }
         if (icon.type === "obsidian") {
-            const el = activeDocument.createElement("div");
+            const el = activeDocument.createDiv();
             setIcon(el, icon.name);
             return el;
         }

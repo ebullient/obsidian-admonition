@@ -21,7 +21,7 @@ export const isSelectorValid = ((dummyElement) => (selector: string) => {
         return false;
     }
     return true;
-})(activeDocument.createDocumentFragment());
+})(createFragment());
 
 export function validateImport(
     plugin: ObsidianAdmonition,
@@ -58,7 +58,7 @@ export function validateImport(
         };
     }
     if (
-        !("color" in admonition) ||
+        typeof admonition.color !== "string" ||
         !/(?:(?:2(?:[0-4]\d|5[0-5])|\d{1,2}|1\d\d)\s*,\s*){2}\s*(?:2(?:[0-4]\d|5[0-5])|\d{1,2}|1\d\d)/.test(
             admonition.color,
         )

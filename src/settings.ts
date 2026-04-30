@@ -843,9 +843,10 @@ class SettingsModal extends Modal {
                         ".admonition-title-icon",
                     );
 
-                    iconEl.innerHTML =
-                        this.plugin.iconManager.getIconNode(this.icon)
-                            ?.outerHTML ?? "";
+                    const iconNode = this.plugin.iconManager.getIconNode(
+                        this.icon,
+                    );
+                    iconEl?.replaceChildren(...(iconNode ? [iconNode] : []));
                 };
 
                 const modal = new IconSuggestionModal(
@@ -891,7 +892,7 @@ class SettingsModal extends Modal {
                 image.onload = () => {
                     try {
                         // Resize the image
-                        const canvas = activeDocument.createElement("canvas");
+                        const canvas = activeDocument.createEl("canvas");
                         const max_size = 24;
                         let width = image.width;
                         let height = image.height;
