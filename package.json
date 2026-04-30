@@ -30,7 +30,7 @@
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
-    "@fortawesome/free-solid-svg-icons": "^5.15.1",
+    "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@popperjs/core": "^2.11.8",
     "@primer/octicons": "^19.22.0",
     "@biomejs/biome": "2.4.8",
