@@ -28,7 +28,7 @@
   "author": "ebullient",
   "license": "MIT",
   "devDependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@popperjs/core": "^2.11.8",
