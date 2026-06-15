@@ -6,6 +6,7 @@ import {
     Platform,
     PluginSettingTab,
     Setting,
+    sanitizeHTMLToDom,
     TextAreaComponent,
     type TextComponent,
 } from "obsidian";
@@ -843,9 +844,12 @@ class SettingsModal extends Modal {
                         ".admonition-title-icon",
                     );
 
-                    iconEl.innerHTML =
-                        this.plugin.iconManager.getIconNode(this.icon)
-                            ?.outerHTML ?? "";
+                    iconEl?.replaceChildren(
+                        sanitizeHTMLToDom(
+                            this.plugin.iconManager.getIconNode(this.icon)
+                                ?.outerHTML ?? "",
+                        ),
+                    );
                 };
 
                 const modal = new IconSuggestionModal(
