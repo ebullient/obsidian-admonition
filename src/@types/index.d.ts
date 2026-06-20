@@ -31,7 +31,7 @@ export interface AdmonitionSettings {
     dropShadow: boolean;
     hideEmpty: boolean;
     icons: Array<DownloadableIconPack>;
-    useFontAwesome: boolean;
+    useFontAwesome?: boolean;
     rpgDownloadedOnce: boolean;
     useSnippet: boolean;
     snippetPath: string;

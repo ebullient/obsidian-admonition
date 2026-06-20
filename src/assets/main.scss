@@ -58,6 +58,16 @@
   }
 }
 
+/* Minimal sizing rules for Font Awesome SVG icons (svg-inline--fa class) */
+.svg-inline--fa {
+  box-sizing: content-box;
+  display: var(--fa-display, inline-block);
+  height: 1em;
+  overflow: visible;
+  vertical-align: -0.125em;
+  width: var(--fa-width, 1.25em);
+}
+
 // Makes Mathjax blocks stop jumping around between views and
 // makes Mathjax act nicer in OL Blocks
 :is(.markdown-source-view.mod-cm6) .admonition .math-block > mjx-container {

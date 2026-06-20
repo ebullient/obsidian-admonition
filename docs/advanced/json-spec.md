@@ -51,14 +51,20 @@ type AdmonitionIconDefinition = {
 };
 
 type IconType =
-    | "font-awesome"  // FontAwesome icons (included by default)
     | "obsidian"      // Built-in Obsidian Lucide icons
     | "image"         // Custom uploaded image
     | DownloadableIconPack;
 
 // Downloadable packs (can be enabled in Settings → Icon Packs)
-type DownloadableIconPack = "rpg" | "weather";
+type DownloadableIconPack =
+    | "fas"       // Font Awesome Solid
+    | "far"       // Font Awesome Regular
+    | "fab"       // Font Awesome Brands
+    | "octicons"  // GitHub Octicons
+    | "rpg";      // RPG Awesome
 ```
+
+> **Note:** The legacy `"font-awesome"` type is accepted on import for backwards compatibility and is automatically migrated to the appropriate `fas`/`far`/`fab` pack.
 
 ## Minimal Example
 
@@ -80,7 +86,7 @@ Only `type` is required. Omitting `icon` and `color` assigns defaults.
         "type": "my-type",
         "title": "My Type",
         "icon": {
-            "type": "font-awesome",
+            "type": "fas",
             "name": "star"
         },
         "color": "200, 50, 50",

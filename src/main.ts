@@ -60,9 +60,12 @@ declare module "obsidian" {
 }
 
 import type { EditorState, TransactionSpec } from "@codemirror/state";
-import type { IconName } from "@fortawesome/fontawesome-svg-core";
 import CalloutManager from "./callout/manager";
-import { type DownloadableIconPack, IconManager } from "./icons/manager";
+import {
+    type DownloadableIconPack,
+    faPackForIcon,
+    IconManager,
+} from "./icons/manager";
 import { InsertAdmonitionModal } from "./modal";
 import AdmonitionSetting from "./settings";
 import { AdmonitionSuggest, CalloutSuggest } from "./suggest/suggest";
@@ -79,7 +82,6 @@ const DEFAULT_APP_SETTINGS: AdmonitionSettings = {
     dropShadow: true,
     hideEmpty: false,
     icons: [],
-    useFontAwesome: true,
     rpgDownloadedOnce: false,
     useSnippet: false,
     snippetPath: `custom-admonitions.${[...Array(6).keys()]
@@ -798,7 +800,7 @@ ${editor.getSelection()}
                         icon: {
                             type: "font-awesome",
                             name: this.data.userAdmonitions[admonition]
-                                .icon as unknown as IconName,
+                                .icon as unknown as string,
                         },
                     };
                 }
@@ -830,6 +832,33 @@ ${editor.getSelection()}
             } catch {
                 /* non-critical: proceed without rpg icons if download fails */
             }
+        }
+
+        if (this.data.useFontAwesome && this.data.userAdmonitions) {
+            const packsNeeded = new Set<DownloadableIconPack>();
+            for (const admonition of Object.values(this.data.userAdmonitions)) {
+                if (
+                    admonition.icon?.type !== "font-awesome" ||
+                    !admonition.icon.name
+                ) {
+                    continue;
+                }
+                const pack = faPackForIcon(admonition.icon.name);
+                if (pack) {
+                    admonition.icon.type = pack;
+                    packsNeeded.add(pack);
+                }
+            }
+            for (const pack of packsNeeded) {
+                if (!this.data.icons.includes(pack)) {
+                    try {
+                        await this.downloadIcon(pack);
+                    } catch {
+                        /* non-critical */
+                    }
+                }
+            }
+            this.data.useFontAwesome = false;
         }
 
         if (this.data.userAdmonitions) {

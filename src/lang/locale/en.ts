@@ -51,9 +51,6 @@ export default {
         "Any admonition that does not have content inside it will be hidden.",
 
     // --- Icon Packs ---
-    "font-awesome.name": "Use Font Awesome Icons",
-    "font-awesome.desc":
-        "Font Awesome Free icons will be available in the item picker. Existing Admonitions defined using Font Awesome icons will continue to work.",
     "additional-icons.name": "Load Additional Icons",
     "additional-icons.desc":
         "Load an additional icon pack. This requires an internet connection.",

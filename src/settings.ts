@@ -12,6 +12,7 @@ import {
 } from "obsidian";
 import { t9n } from "src/lang/helpers";
 import type { Admonition, AdmonitionIconDefinition } from "./@types";
+import { faPackForIcon } from "./icons/manager";
 import { type DownloadableIconPack, DownloadableIcons } from "./icons/packs";
 import type ObsidianAdmonition from "./main";
 import { IconSuggestionModal } from "./modal";
@@ -167,7 +168,9 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 input.onchange = async () => {
                     const { files } = input;
 
-                    if (!files.length) return;
+                    if (!files?.length) {
+                        return;
+                    }
                     try {
                         const data: (Admonition[] | Admonition)[] = [];
                         for (const file of Array.from(files)) {
@@ -177,15 +180,43 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                     | Admonition,
                             );
                         }
-                        for (const item of data.flat()) {
-                            if (typeof item !== "object") continue;
-
+                        const items = data
+                            .flat()
+                            .filter((item) => typeof item === "object");
+                        const packsNeeded = new Set<DownloadableIconPack>();
+                        for (const item of items) {
                             if (!item.icon) {
-                                item.icon = {
-                                    name: "pencil-alt",
-                                    type: "font-awesome",
-                                };
+                                item.icon = { name: "pencil", type: "fas" };
+                                packsNeeded.add("fas");
+                            } else if (
+                                item.icon.type === "font-awesome" &&
+                                item.icon.name
+                            ) {
+                                item.icon.type =
+                                    faPackForIcon(item.icon.name) ?? "fas";
+                                packsNeeded.add(
+                                    item.icon.type as DownloadableIconPack,
+                                );
+                            } else if (
+                                item.icon.type &&
+                                item.icon.type !== "obsidian" &&
+                                item.icon.type !== "image"
+                            ) {
+                                packsNeeded.add(
+                                    item.icon.type as DownloadableIconPack,
+                                );
                             }
+                        }
+                        for (const pack of packsNeeded) {
+                            if (!this.plugin.data.icons.includes(pack)) {
+                                try {
+                                    await this.plugin.downloadIcon(pack);
+                                } catch {
+                                    /* non-critical */
+                                }
+                            }
+                        }
+                        for (const item of items) {
                             const valid = validateImport(this.plugin, item);
                             if (valid.success === false) {
                                 new Notice(
@@ -252,7 +283,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                         color: "149, 214, 148",
                                         icon: {
                                             name: "head-side-cough",
-                                            type: "font-awesome",
+                                            type: "fas",
                                         },
                                     },
                                     null,
@@ -426,17 +457,6 @@ export default class AdmonitionSetting extends PluginSettingTab {
         new Setting(containerEl)
             .setHeading()
             .setName(t9n("heading.icon-packs"));
-
-        new Setting(containerEl)
-            .setName(t9n("font-awesome.name"))
-            .setDesc(t9n("font-awesome.desc"))
-            .addToggle((t) => {
-                t.setValue(this.plugin.data.useFontAwesome).onChange((v) => {
-                    this.plugin.data.useFontAwesome = v;
-                    this.plugin.iconManager.setIconDefinitions();
-                    void this.plugin.saveSettings();
-                });
-            });
 
         let selected: DownloadableIconPack;
         const possibilities = Object.entries(DownloadableIcons).filter(

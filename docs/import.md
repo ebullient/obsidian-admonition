@@ -20,7 +20,7 @@ The file must be a JSON array of admonition definitions. The only required field
 ]
 ```
 
-When `"icon"` and `"color"` are not specified, a random color and the `pencil-alt` FontAwesome icon will be used. To set them explicitly:
+When `"icon"` and `"color"` are not specified, a random color and the `pencil` Font Awesome icon will be used. To set them explicitly:
 
 ```json
 [
@@ -40,12 +40,14 @@ To specify which icon pack the icon name comes from:
         "type": "my-custom-type",
         "icon": {
             "name": "globe",
-            "type": "font-awesome"
+            "type": "fas"
         },
         "color": "120,120,120"
     }
 ]
 ```
+
+> **Note:** The legacy `"type": "font-awesome"` value is still accepted on import and will be automatically migrated to the correct pack (`fas`, `far`, or `fab`).
 
 See the [JSON Specification](advanced/json-spec.md) for all available fields.
 
