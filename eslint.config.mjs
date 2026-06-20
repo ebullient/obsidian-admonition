@@ -40,6 +40,7 @@ export default defineConfig([
             },
         },
         rules: {
+            "@typescript-eslint/no-deprecated": "warn",
             "obsidianmd/ui/sentence-case": [
                 "warn",
                 {

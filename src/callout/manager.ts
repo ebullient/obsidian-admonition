@@ -16,9 +16,17 @@ type Heights = Partial<{
 }>;
 
 export default class CalloutManager extends Component {
+    style: HTMLStyleElement;
+
+    get sheet() {
+        return this.style.sheet;
+    }
     /* ruleMap: Map<string, number> = new Map(); */
     constructor(public plugin: ObsidianAdmonition) {
         super();
+        this.style = activeDocument.head.createEl("style", {
+            attr: { id: "ADMONITIONS_CUSTOM_STYLE_SHEET" },
+        });
     }
 
     onload() {
@@ -52,6 +60,9 @@ export default class CalloutManager extends Component {
         const titleEl = callout.querySelector<HTMLDivElement>(".callout-title");
         const content =
             callout.querySelector<HTMLDivElement>(".callout-content");
+        if (!titleEl || !content) {
+            return;
+        }
 
         const section = ctx.getSectionInfo(el);
         if (section) {
@@ -63,11 +74,7 @@ export default class CalloutManager extends Component {
                 callout.dataset.calloutMetadata = metadata;
             }
 
-            if (
-                content &&
-                (this.plugin.admonitions[type].copy ??
-                    this.plugin.data.copyButton)
-            ) {
+            if (content && (admonition.copy ?? this.plugin.data.copyButton)) {
                 const copy = content.createDiv("admonition-content-copy");
                 setIcon(copy, "copy");
                 copy.addEventListener("click", () => {
@@ -104,15 +111,12 @@ export default class CalloutManager extends Component {
             this.setCollapsible(callout);
         }
 
-        if (
-            admonition.title &&
-            titleEl.textContent ===
-                type[0].toUpperCase() + type.slice(1).toLowerCase()
-        ) {
-            const titleContentEl = titleEl.querySelector<HTMLDivElement>(
-                ".callout-title-inner",
-            );
-            if (titleContentEl) {
+        const titleContentEl = titleEl?.querySelector<HTMLDivElement>(
+            ".callout-title-inner",
+        );
+        if (titleContentEl && admonition.title) {
+            const current = titleContentEl.textContent?.toLowerCase() ?? "";
+            if (current === type?.toLowerCase() || current === "") {
                 titleContentEl.setText(admonition.title);
             }
         }
@@ -126,7 +130,8 @@ export default class CalloutManager extends Component {
         const content =
             callout.querySelector<HTMLDivElement>(".callout-content");
 
-        if (!content) return;
+        if (!content || !titleEl) return;
+
         callout.addClass("is-collapsible");
         if (this.plugin.data.defaultCollapseType === "closed") {
             callout.dataset.calloutFold = "-";
@@ -159,11 +164,13 @@ export default class CalloutManager extends Component {
         event?.preventDefault();
         const content =
             callout.querySelector<HTMLDivElement>(".callout-content");
+        if (!content) return;
 
-        function transitionEnd(_evt: TransitionEvent) {
+        const transitionEnd = (_evt: TransitionEvent) => {
             content.removeEventListener("transitionend", transitionEnd);
             content.style.removeProperty("transition");
-        }
+        };
+
         content.addEventListener("transitionend", transitionEnd);
         content.setCssStyles({
             transition: "all 100ms cubic-bezier(.02, .01, .47, 1)",
@@ -205,6 +212,9 @@ export default class CalloutManager extends Component {
         return sheet.join("\n\n");
     }
     addAdmonition(admonition: Admonition) {
+        if (!this.sheet) {
+            return;
+        }
         const type = admonition.type.toLowerCase();
         if (this.indexing.contains(type)) {
             const existingIndex = this.indexing.indexOf(type);
@@ -250,17 +260,13 @@ export default class CalloutManager extends Component {
     }
     indexing: string[] = [];
     removeAdmonition(admonition: Admonition) {
-        if (!this.indexing.contains(admonition.type)) return;
+        if (!this.sheet || !this.indexing.contains(admonition.type)) {
+            return;
+        }
         const index = this.indexing.indexOf(admonition.type);
         this.sheet.deleteRule(index);
         this.indexing.splice(index, 1);
         void this.updateSnippet();
-    }
-    style = activeDocument.head.createEl("style", {
-        attr: { id: "ADMONITIONS_CUSTOM_STYLE_SHEET" },
-    });
-    get sheet() {
-        return this.style.sheet;
     }
 
     unload() {

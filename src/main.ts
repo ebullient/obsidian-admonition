@@ -522,7 +522,7 @@ ${editor.getSelection()}
                 if (admonitionElement.instanceOf(HTMLDetailsElement)) {
                     admonitionElement.setAttribute("open", "open");
                 }
-                setImmediate(() => {
+                activeWindow.setTimeout(() => {
                     void MarkdownRenderer.render(
                         this.app,
                         content,
@@ -536,7 +536,7 @@ ${editor.getSelection()}
                     ) {
                         admonitionElement.removeAttribute("open");
                     }
-                });
+                }, 0);
             } else {
                 void MarkdownRenderer.render(
                     this.app,
@@ -820,7 +820,7 @@ ${editor.getSelection()}
             !this.data.rpgDownloadedOnce &&
             this.data.userAdmonitions &&
             Object.values(this.data.userAdmonitions).some(
-                (admonition) => admonition.icon.type === "rpg",
+                (admonition) => admonition.icon?.type === "rpg",
             ) &&
             !this.data.icons.includes("rpg")
         ) {
