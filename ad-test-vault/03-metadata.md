@@ -73,5 +73,5 @@ You can query admonitions by metadata value from a script or Dataview JS block:
 
 ```javascript
 // Find all rendered admonitions with a specific metadata value
-document.querySelectorAll('.callout[data-callout-metadata="highlight"]')
+document.querySelectorAll('.callout[data-callout-metadata]="highlight"]')
 ```
