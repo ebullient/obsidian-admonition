@@ -304,9 +304,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                             ) {
                                 item.icon.type =
                                     faPackForIcon(item.icon.name) ?? "fas";
-                                packsNeeded.add(
-                                    item.icon.type as DownloadableIconPack,
-                                );
+                                packsNeeded.add(item.icon.type);
                             } else if (
                                 item.icon.type &&
                                 item.icon.type !== "obsidian" &&
@@ -446,13 +444,12 @@ export default class AdmonitionSetting extends PluginSettingTab {
                             copy: modal.copy,
                         };
                         void this.plugin.addAdmonition(admonition);
-                        this.plugin.calloutManager.addAdmonition(admonition);
                         this.update();
                     };
                     modal.open();
                 },
             },
-            onDelete: async (idx: number) => {
+            onDelete: (idx: number) => {
                 const admonition = admonitions[idx];
                 void this.plugin.removeAdmonition(admonition);
                 this.update();

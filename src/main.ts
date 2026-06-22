@@ -375,7 +375,7 @@ ${editor.getSelection()}
                         return;
                     }
                     try {
-                        activeWindow.setTimeout(() => {
+                        window.setTimeout(() => {
                             try {
                                 const pos = editor.posAtDOM(admonitionElement);
                                 editor.focus();
@@ -524,7 +524,7 @@ ${editor.getSelection()}
                 if (admonitionElement.instanceOf(HTMLDetailsElement)) {
                     admonitionElement.setAttribute("open", "open");
                 }
-                activeWindow.setTimeout(() => {
+                window.setTimeout(() => {
                     void MarkdownRenderer.render(
                         this.app,
                         content,
