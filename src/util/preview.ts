@@ -20,7 +20,7 @@ export function buildAdmonitionPreview(
     const el = plugin.getAdmonitionElement(
         admonition.type,
         title,
-        plugin.isIconWithCss(admonition) ? admonition.icon : undefined,
+        plugin.isIconWithCss(admonition) ? {} : admonition.icon,
         plugin.shouldInjectColor(admonition) ? admonition.color : undefined,
         collapse,
     );
