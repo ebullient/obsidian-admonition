@@ -1,7 +1,7 @@
 {
     "id": "obsidian-admonition",
     "name": "Admonition",
-    "version": "12.0.4",
+    "version": "12.0.5",
     "minAppVersion": "1.13.0",
     "description": "Create and customize callout blocks — tips, warnings, notes, and more — with custom icons and styles.",
     "author": "Jeremy Valentine, continued by Erin Schnabel",
