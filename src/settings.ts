@@ -18,7 +18,11 @@ import type ObsidianAdmonition from "./main";
 import { IconSuggestionModal } from "./modal";
 import { confirmWithModal } from "./modal/confirm";
 import Export from "./modal/export";
-import { ADD_COMMAND_NAME, REMOVE_COMMAND_NAME } from "./util";
+import {
+    ADD_COMMAND_NAME,
+    buildAdmonitionPreview,
+    REMOVE_COMMAND_NAME,
+} from "./util";
 import {
     validate,
     validateIcon,
@@ -708,19 +712,18 @@ class SettingsModal extends Modal {
     }
 
     setAdmonitionElement(title: string) {
-        this.admonitionPreviewParent.empty();
-        this.admonitionPreview = this.plugin.getAdmonitionElement(
-            this.type,
+        this.admonitionPreview = buildAdmonitionPreview(
+            this.admonitionPreviewParent,
+            this.plugin,
+            {
+                type: this.type,
+                icon: this.icon,
+                color: this.color,
+                iconWithCss: this.iconWithCss,
+                injectColor: this.injectColor,
+            } as Admonition,
             title[0].toUpperCase() + title.slice(1).toLowerCase(),
-            this.iconWithCss ? {} : this.icon,
-            this.injectColor ? this.color : null,
         );
-        this.admonitionPreview
-            .createDiv("callout-content admonition-content")
-            .createEl("p", {
-                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.",
-            });
-        this.admonitionPreviewParent.appendChild(this.admonitionPreview);
     }
     async display() {
         this.containerEl.addClass("admonition-settings-modal");
@@ -1062,12 +1065,15 @@ class SettingsModal extends Modal {
 
     static setValidationError(textInput: HTMLInputElement, message?: string) {
         textInput.addClass("is-invalid");
+        if (!textInput.parentElement) {
+            return;
+        }
         if (message) {
             textInput.parentElement.addClasses([
                 "has-invalid-message",
                 "unset-align-items",
             ]);
-            textInput.parentElement.parentElement.addClass(
+            textInput.parentElement.parentElement?.addClass(
                 ".unset-align-items",
             );
             let mDiv =
@@ -1085,16 +1091,20 @@ class SettingsModal extends Modal {
     }
     static removeValidationError(textInput: HTMLInputElement) {
         textInput.removeClass("is-invalid");
+        if (!textInput.parentElement) {
+            return;
+        }
         textInput.parentElement.removeClasses([
             "has-invalid-message",
             "unset-align-items",
         ]);
-        textInput.parentElement.parentElement.removeClass(".unset-align-items");
+        textInput.parentElement.parentElement?.removeClass(
+            ".unset-align-items",
+        );
 
-        if (textInput.parentElement.querySelector(".invalid-feedback")) {
-            textInput.parentElement.removeChild(
-                textInput.parentElement.querySelector(".invalid-feedback"),
-            );
+        const mDiv = textInput.parentElement.querySelector(".invalid-feedback");
+        if (mDiv) {
+            textInput.parentElement.removeChild(mDiv);
         }
     }
 }
@@ -1110,10 +1120,12 @@ function hexToRgb(hex: string) {
           }
         : null;
 }
+
 function componentToHex(c: number) {
     const hex = c.toString(16);
     return hex.length === 1 ? `0${hex}` : hex;
 }
+
 function rgbToHex(rgb: string) {
     // Handle both "rgb(r, g, b)" and legacy "r, g, b" formats
     const result =

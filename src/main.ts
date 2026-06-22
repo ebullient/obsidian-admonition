@@ -426,7 +426,7 @@ ${editor.getSelection()}
     getAdmonitionElement(
         type: string,
         title: string,
-        icon: AdmonitionIconDefinition,
+        icon?: AdmonitionIconDefinition,
         color?: string,
         collapse?: string,
         source?: string,

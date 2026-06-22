@@ -10,6 +10,7 @@ import {
 import type { Admonition, AdmonitionIconDefinition } from "src/@types";
 import { t9n } from "src/lang/helpers";
 import type ObsidianAdmonition from "src/main";
+import { buildAdmonitionPreview } from "src/util";
 import { FuzzyInputSuggest } from "./suggester";
 
 export class IconSuggestionModal extends FuzzyInputSuggest<AdmonitionIconDefinition> {
@@ -220,7 +221,6 @@ export class InsertAdmonitionModal extends Modal {
             });
     }
     buildAdmonition() {
-        this.admonitionEl.empty();
         if (this.type && this.plugin.admonitions[this.type]) {
             const admonition = this.plugin.admonitions[this.type];
             const collapseForPreview =
@@ -229,20 +229,13 @@ export class InsertAdmonitionModal extends Modal {
                         ? this.plugin.data.defaultCollapseType
                         : "none"
                     : this.collapse;
-            this.element = this.plugin.getAdmonitionElement(
-                this.type,
+            this.element = buildAdmonitionPreview(
+                this.admonitionEl,
+                this.plugin,
+                admonition,
                 this.title,
-                this.plugin.isIconWithCss(admonition) ? {} : admonition.icon,
-                this.plugin.shouldInjectColor(admonition)
-                    ? admonition.color
-                    : null,
                 collapseForPreview,
             );
-            this.element.createDiv({
-                cls: "admonition-content",
-                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.",
-            });
-            this.admonitionEl.appendChild(this.element);
         }
     }
 }
