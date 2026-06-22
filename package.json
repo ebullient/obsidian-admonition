@@ -4,6 +4,7 @@
   "description": "Enhanced callouts for Obsidian.md",
   "main": "main.js",
   "scripts": {
+    "gen-icons": "node icons/fas/_gen.js && node icons/far/_gen.js && node icons/fab/_gen.js && node icons/fa-names/_gen.js && node icons/octicons/_gen.js",
     "dev": "node ./esbuild.config.mjs",
     "build": "node ./esbuild.config.mjs production",
     "eslint": "npx eslint",
