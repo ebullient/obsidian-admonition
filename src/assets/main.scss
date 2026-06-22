@@ -181,18 +181,6 @@
       padding-top: 0.5625rem;
     }
   }
-
-  .coffee {
-    width: 60%;
-    color: var(--text-faint);
-    margin: 1rem auto;
-    text-align: center;
-
-    img {
-      height: 30px;
-    }
-  }
-
 }
 
 .setting-item {
@@ -204,6 +192,14 @@
 
 .unset-align-items {
   align-items: unset;
+}
+
+.admonition-mcp-coffee {
+  text-align: center;
+  img {
+    margin: auto;
+    height: 30px;
+  }
 }
 
 .admonition-settings-modal {
