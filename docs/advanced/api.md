@@ -23,7 +23,7 @@ await plugin.addAdmonition({
     icon: { type: "font-awesome", name: "star" },
     color: "200, 50, 50",
     command: false,
-    styleWithCss: false,
+    iconWithCss: false,
     noTitle: false,
     copy: false,
 });
@@ -102,8 +102,8 @@ interface Admonition {
     icon: AdmonitionIconDefinition;
     color: string;
     command: boolean;
-    styleWithCss?: boolean;
-    /** @deprecated Use styleWithCss instead. */
+    iconWithCss?: boolean;
+    /** @deprecated Use iconWithCss instead. */
     injectColor?: boolean;
     noTitle: boolean;
     copy?: boolean;
@@ -119,13 +119,21 @@ type AdmonitionIconDefinition = {
 };
 
 type IconType =
-    | "font-awesome"
     | "obsidian"
     | "image"
     | DownloadableIconPack;
+
+// Downloadable packs (can be enabled in Settings → Icon Packs)
+type DownloadableIconPack =
+    | "fas"       // Font Awesome Solid
+    | "far"       // Font Awesome Regular
+    | "fab"       // Font Awesome Brands
+    | "octicons"  // GitHub Octicons
+    | "rpg";      // RPG Awesome
 ```
 
-`DownloadableIconPack` is a union of pack identifiers such as `"rpg"` and `"weather"`.
+> [!NOTE]
+> The legacy `"font-awesome"` type string is still accepted for backwards compatibility and is automatically migrated to the appropriate `fas`/`far`/`fab` pack. As of v12.0.4, Font Awesome packs are downloadable like other packs; existing users with Font Awesome icons are migrated automatically.
 
 > [!NOTE]
 > Prefer `addAdmonition` / `removeAdmonition` over mutating `plugin.data.userAdmonitions` directly. Those methods also update the injected CSS and persist settings to disk.

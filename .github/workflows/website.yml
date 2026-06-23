@@ -1,0 +1,22 @@
+name: Update docs
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+
+permissions: read-all
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.repository == 'ebullient/obsidian-admonition'
+    steps:
+      - name: Bump website
+        env:
+          GH_TOKEN: ${{ secrets.EBULLIENT_PAT }}
+        run: |
+          gh workflow run -R ebullient/ebullient.github.io gh-pages.yml

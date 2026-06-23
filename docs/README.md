@@ -4,22 +4,14 @@
 
 The Admonitions plugin for [Obsidian](https://obsidian.md) adds block-styled content and callout functionality to your notes, with a design inspired by [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/reference/admonitions/).
 
-> [!CAUTION]
-> **Development Status: Maintenance Mode**
-> Due to a glut of high priority Javalent plugin projects, this plugin is now entering maintenance mode for the time being. This is **not** a permanent status.
-> - PRs will be reviewed.
-> - Bugs will be reviewed and worked if able.
-> - Feature Requests **will not** be worked.
-
 ## Features
 
 1. Create either a code block or a callout using Admonitions.
-2. If you have Microsoft Document syntax admonitions, Admonitions can auto-convert them to the new callout box syntax with the click of a button.
-3. Set default titles, default collapse states, or default no-title options for the callouts you create with Admonitions.
-4. Admonitions includes editor suggestions to speed up the process of creating custom admonitions and callout boxes.
-5. Admonitions provides helpful commands for inserting callout boxes and the ability to register commands for specific types.
-6. Get access to a free FontAwesome Icon library, with options for Opticon and RPG Awesome.
-7. Check out the Obsidian TTRPG-Share's [Repository of Admonitions](https://github.com/Obsidian-TTRPG-Community/ObsidianTTRPGShare/tree/0a8b23a52fcf6129ddae9fc21a2e7433f83cc343/System-Agnostic/admonitions) for some starter admonitions.
+2. Set default titles, default collapse states, or default no-title options for the callouts you create with Admonitions.
+3. Admonitions includes editor suggestions to speed up the process of creating custom admonitions and callout boxes.
+4. Admonitions provides helpful commands for inserting callout boxes and the ability to register commands for specific types.
+5. Download optional icon packs: Font Awesome (Solid, Regular, Brands), Octicons, and RPG Awesome. As of v12.0.4, Font Awesome packs are also downloaded (a migration step will download them automatically if you had Font Awesome icons in use).
+6. Check out the Obsidian TTRPG-Share's [Repository of Admonitions](https://github.com/Obsidian-TTRPG-Community/ObsidianTTRPGShare/tree/0a8b23a52fcf6129ddae9fc21a2e7433f83cc343/System-Agnostic/admonitions) for some starter admonitions.
 
 ## Quickstart
 

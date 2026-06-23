@@ -43,17 +43,3 @@ Additional settings to further customize the Admonition plugin.
 ### Markdown Syntax Highlighting
 
 Enables syntax highlighting when editing admonition code blocks.
-
-### Sync Links to Metadata Cache
-
-When enabled, the plugin attempts to synchronize links to the metadata cache so they can be displayed in graph view.
-
-> [!NOTE]
-> This feature is experimental. Links will only be synced when rendered in an admonition and will not persist if you close and reopen Obsidian. See [issue #144](https://github.com/valentine195/obsidian-admonition/issues/144) for more information.
-
-### Generate JS for Publish
-
-> [!CAUTION]
-> This feature was removed in v10.0.0. Use native Obsidian callouts (`> [!type]`) instead.
-
-Generates JavaScript for use on custom-domain Obsidian Publish websites. See [Publish.js with Admonitions](advanced/publish.md) for historical details.

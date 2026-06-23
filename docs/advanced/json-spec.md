@@ -24,10 +24,10 @@ interface Admonition {
 
     // If true, this admonition is styled entirely via CSS.
     // The plugin will not auto-generate icon/color CSS for this type.
-    styleWithCss?: boolean;
+    iconWithCss?: boolean;
 
     // Deprecated legacy field (color-only override).
-    // Old imports using injectColor:false are migrated to styleWithCss:true.
+    // Old imports using injectColor:false are migrated to iconWithCss:true.
     injectColor?: boolean;
 
     // If true, the title bar is hidden by default unless title: is explicitly set.
@@ -91,7 +91,7 @@ Only `type` is required. Omitting `icon` and `color` assigns defaults.
         },
         "color": "200, 50, 50",
         "command": false,
-        "styleWithCss": false,
+        "iconWithCss": false,
         "noTitle": false,
         "copy": false
     }

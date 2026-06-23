@@ -86,7 +86,7 @@ You can set all admonitions to be collapsible by default in the [settings](setti
 
 ### Icon
 
-To override the icon for a single codeblock, use the `icon` parameter. The name must exactly match an icon from an enabled icon pack (FontAwesome, Octicons, or RPG Awesome — configure which are active under Settings → Icon Packs).
+To override the icon for a single codeblock, use the `icon` parameter. The name must exactly match an icon from an enabled icon pack (Font Awesome Solid/Regular/Brands, Octicons, or RPG Awesome — configure which packs are downloaded and active under Settings → Icon Packs).
 
 ````md
 ```ad-note
