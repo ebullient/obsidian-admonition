@@ -5,7 +5,7 @@ To create an Admonition, navigate to the [Admonition Settings](settings.md#add-n
 <details>
 <summary>Gif of the Creation Process</summary>
 
-![Create an Admonition](images/IMG-Create%20an%20Admonition.gif)
+![Create an Admonition](images/IMG-Create-an-Admonition.gif)
 
 </details>
 
@@ -30,6 +30,6 @@ To create an Admonition, navigate to the [Admonition Settings](settings.md#add-n
 <details>
 <summary>Screenshot of Popup Window</summary>
 
-![Create an Admonition settings popup](images/IMG-Create%20an%20Admonition.png)
+![Create an Admonition settings popup](images/IMG-Create-an-Admonition.png)
 
 </details>

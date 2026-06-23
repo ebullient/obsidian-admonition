@@ -60,7 +60,7 @@ See the [JSON Specification](advanced/json-spec.md) for all available fields.
 <details>
 <summary>Import an Admonition File</summary>
 
-![Import an Admonition](images/IMG-Import%20an%20Admonition.png)
+![Import an Admonition](images/IMG-Import-an-Admonition.png)
 
 </details>
 
@@ -71,7 +71,7 @@ See the [JSON Specification](advanced/json-spec.md) for all available fields.
 <details>
 <summary>Select an Admonition</summary>
 
-![Select an Admonition file](images/IMG-Import%20an%20Admonition-3.png)
+![Select an Admonition file](images/IMG-Import-an-Admonition-3.png)
 
 </details>
 
@@ -82,7 +82,7 @@ See the [JSON Specification](advanced/json-spec.md) for all available fields.
 <details>
 <summary>List of Admonitions</summary>
 
-![List of Admonitions after import](images/IMG-Import%20an%20Admonition-4.png)
+![List of Admonitions after import](images/IMG-Import-an-Admonition-4.png)
 
 </details>
 
