@@ -37,7 +37,7 @@
     "@biomejs/biome": "2.4.16",
     "@primer/octicons": "^19.27.0",
     "@types/node": "^25.9.1",
-    "@typescript-eslint/parser": "^8.56.1",
+    "@typescript-eslint/parser": "^8.60.0",
     "auto-changelog": "^2.5.0",
     "esbuild": "^0.28.1",
     "esbuild-sass-plugin": "^3.3.1",
