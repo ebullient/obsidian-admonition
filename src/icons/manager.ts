@@ -10,9 +10,9 @@ export { type DownloadableIconPack, DownloadableIcons, FA_NAMES };
 /** Identify which FA pack a legacy "font-awesome" icon name belongs to.
  *  Prefers fas over far when an icon exists in both (matches old lookup order). */
 export function faPackForIcon(name: string): DownloadableIconPack | undefined {
-    if ((FA_NAMES.fas as string[]).includes(name)) return "fas";
-    if ((FA_NAMES.far as string[]).includes(name)) return "far";
-    if ((FA_NAMES.fab as string[]).includes(name)) return "fab";
+    if (FA_NAMES.fas.includes(name)) return "fas";
+    if (FA_NAMES.far.includes(name)) return "far";
+    if (FA_NAMES.fab.includes(name)) return "fab";
 }
 
 export class IconManager {
@@ -121,7 +121,7 @@ export class IconManager {
             // at enhance.js:1:9665
             // at HTMLDocument.createEl (enhance.js:1:8610)
             // at l2.getIconNode (plugin:obsidian-admonition:575:1600758)
-            // eslint-disable-next-line obsidianmd/prefer-create-el
+            // eslint-disable-next-line obsidianmd/prefer-create-el -- fails with HierarchyRequestError: Failed to execute 'appendChild' on 'Node': Only one element on document allowed.
             const el = activeDocument.createElement("div");
             setIcon(el, icon.name);
             return el;
