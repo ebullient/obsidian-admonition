@@ -69,7 +69,7 @@ export default class CalloutManager extends Component {
             const { text, lineStart, lineEnd } = section;
             const definition = text.split("\n")[lineStart];
 
-            const [, metadata] = definition.match(/> \[!.+\|(.*)]/) ?? [];
+            const [, metadata] = definition?.match(/> \[!.+\|(.*)]/) ?? [];
             if (metadata) {
                 callout.dataset.calloutMetadata = metadata;
             }
