@@ -105,7 +105,7 @@ jobs:
 
     # Attest build provenance for release artifacts
     - name: Attest build artifacts
-      uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26  # v4
+      uses: actions/attest@f7c74d28b9d84cb8768d0b8ca14a4bac6ef463e6  # v4
       with:
         subject-path: |
           ${{ github.event.repository.name }}-${{ steps.build.outputs.version }}.zip
