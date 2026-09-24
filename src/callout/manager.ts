@@ -269,7 +269,7 @@ export default class CalloutManager extends Component {
         void this.updateSnippet();
     }
 
-    unload() {
+    onunload() {
         document.adoptedStyleSheets = document.adoptedStyleSheets.filter(
             (s) => s !== this.sheet,
         );
