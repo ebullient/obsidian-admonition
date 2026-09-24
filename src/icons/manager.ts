@@ -50,8 +50,8 @@ export class IconManager {
             );
         }
         this.iconDefinitions = [
-            ...getIconIds().map((name) => {
-                return { type: "obsidian" as IconType, name };
+            ...getIconIds().map((name): AdmonitionIconDefinition => {
+                return { type: "obsidian", name };
             }),
             ...downloaded,
         ];
