@@ -25,8 +25,11 @@ export default class CalloutManager extends Component {
 
     onload() {
         //build sheet for custom admonitions
-        activeDocument.adoptedStyleSheets = [
-            ...activeDocument.adoptedStyleSheets,
+        // A constructed sheet can only be adopted by the document whose window
+        // created it. activeDocument may be another window (e.g. when the
+        // plugin is enabled from settings), so always use the main document.
+        document.adoptedStyleSheets = [
+            ...document.adoptedStyleSheets,
             this.sheet,
         ];
 
@@ -267,8 +270,9 @@ export default class CalloutManager extends Component {
     }
 
     unload() {
-        activeDocument.adoptedStyleSheets =
-            activeDocument.adoptedStyleSheets.filter((s) => s !== this.sheet);
+        document.adoptedStyleSheets = document.adoptedStyleSheets.filter(
+            (s) => s !== this.sheet,
+        );
     }
 
     get snippetPath() {
