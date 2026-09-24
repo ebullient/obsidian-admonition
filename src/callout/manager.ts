@@ -16,22 +16,19 @@ type Heights = Partial<{
 }>;
 
 export default class CalloutManager extends Component {
-    style: HTMLStyleElement;
+    sheet: CSSStyleSheet = new CSSStyleSheet();
 
-    get sheet() {
-        return this.style.sheet;
-    }
     /* ruleMap: Map<string, number> = new Map(); */
     constructor(public plugin: ObsidianAdmonition) {
         super();
-        this.style = activeDocument.head.createEl("style", {
-            attr: { id: "ADMONITIONS_CUSTOM_STYLE_SHEET" },
-        });
     }
 
     onload() {
         //build sheet for custom admonitions
-        activeDocument.head.appendChild(this.style);
+        activeDocument.adoptedStyleSheets = [
+            ...activeDocument.adoptedStyleSheets,
+            this.sheet,
+        ];
 
         for (const admonition of Object.values(
             this.plugin.data.userAdmonitions,
@@ -270,7 +267,8 @@ export default class CalloutManager extends Component {
     }
 
     unload() {
-        this.style.detach();
+        activeDocument.adoptedStyleSheets =
+            activeDocument.adoptedStyleSheets.filter((s) => s !== this.sheet);
     }
 
     get snippetPath() {
