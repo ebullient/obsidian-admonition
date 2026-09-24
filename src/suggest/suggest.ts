@@ -50,7 +50,7 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
                 iconEl.removeClass("svg-inline--fa");
                 iconEl.addClass("svg-icon");
             }
-            iconDiv.appendChild(iconEl ?? activeDocument.createDiv());
+            iconDiv.appendChild(iconEl ?? createDiv());
         }
     }
     onTrigger(
