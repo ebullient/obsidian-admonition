@@ -161,9 +161,21 @@ export default class AdmonitionSetting extends PluginSettingTab {
                         t
                             .setValue(this.plugin.data.useSnippet)
                             .onChange(async (v) => {
+                                if (v) {
+                                    const succeeded =
+                                        await this.plugin.calloutManager.trySwitchToSnippet();
+                                    if (!succeeded) {
+                                        new Notice(
+                                            "Could not enable the custom callout snippet; keeping styling in the main document.",
+                                        );
+                                        t.setValue(false);
+                                        return;
+                                    }
+                                } else {
+                                    this.plugin.calloutManager.switchToRuntimeSheet();
+                                }
                                 this.plugin.data.useSnippet = v;
                                 await this.plugin.saveSettings();
-                                this.plugin.calloutManager.setUseSnippet();
                             }),
                     );
                 },
@@ -177,6 +189,14 @@ export default class AdmonitionSetting extends PluginSettingTab {
                             .setValue(this.plugin.data.injectColor)
                             .onChange(async (v) => {
                                 this.plugin.data.injectColor = v;
+                                for (const admonition of Object.values(
+                                    this.plugin.data.userAdmonitions,
+                                )) {
+                                    this.plugin.calloutManager.addAdmonition(
+                                        admonition,
+                                    );
+                                }
+                                await this.plugin.calloutManager.updateSnippetOrSheet();
                                 await this.plugin.saveSettings();
                                 this.update();
                             }),
@@ -469,6 +489,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                             ? admonition.color
                             : undefined,
                     );
+                    admonitionElement.addClass("admonition-settings-preview");
                     setting.infoEl.replaceWith(admonitionElement);
 
                     if (!admonition.command) {
@@ -522,6 +543,9 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                         modalAdmonition.type !== admonition.type
                                     ) {
                                         this.plugin.unregisterType(admonition);
+                                        this.plugin.calloutManager.removeAdmonition(
+                                            admonition,
+                                        );
 
                                         const existing: [string, Admonition][] =
                                             Object.entries(
@@ -555,7 +579,36 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                     this.plugin.calloutManager.addAdmonition(
                                         modalAdmonition,
                                     );
+                                    void this.plugin.calloutManager.updateSnippetOrSheet();
                                     void this.plugin.saveSettings();
+
+                                    const refreshedElement =
+                                        this.plugin.getAdmonitionElement(
+                                            modalAdmonition.type,
+                                            modalAdmonition.type[0].toUpperCase() +
+                                                modalAdmonition.type
+                                                    .slice(1)
+                                                    .toLowerCase(),
+                                            this.plugin.isIconWithCss(
+                                                modalAdmonition,
+                                            )
+                                                ? {}
+                                                : modalAdmonition.icon,
+                                            this.plugin.shouldInjectColor(
+                                                modalAdmonition,
+                                            )
+                                                ? modalAdmonition.color
+                                                : undefined,
+                                        );
+                                    refreshedElement.addClass(
+                                        "admonition-settings-preview",
+                                    );
+                                    setting.settingEl
+                                        .querySelector(
+                                            ".admonition-settings-preview",
+                                        )
+                                        ?.replaceWith(refreshedElement);
+
                                     this.update();
                                 };
                                 modal.open();

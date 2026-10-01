@@ -649,6 +649,7 @@ ${editor.getSelection()}
 
         /** Create the admonition type in CSS */
         this.calloutManager.addAdmonition(admonition);
+        await this.calloutManager.updateSnippetOrSheet();
 
         await this.saveSettings();
     }
@@ -742,11 +743,20 @@ ${editor.getSelection()}
             MarkdownPreviewRenderer.unregisterPostProcessor(postprocessor);
             // unregisterCodeBlockPostProcessor is not part of the public API;
             // there is no official way to unregister a code block processor by language name.
+            const { type } = admonition;
+            const titleCase = type[0].toUpperCase() + type.slice(1);
             (
                 MarkdownPreviewRenderer as typeof MarkdownPreviewRenderer & {
                     unregisterCodeBlockPostProcessor(lang: string): void;
                 }
-            ).unregisterCodeBlockPostProcessor(`ad-${admonition.type}`);
+            ).unregisterCodeBlockPostProcessor(`ad-${type}`);
+            if (titleCase !== type) {
+                (
+                    MarkdownPreviewRenderer as typeof MarkdownPreviewRenderer & {
+                        unregisterCodeBlockPostProcessor(lang: string): void;
+                    }
+                ).unregisterCodeBlockPostProcessor(`ad-${titleCase}`);
+            }
             this.postprocessors.delete(admonition.type);
         }
     }
@@ -759,6 +769,7 @@ ${editor.getSelection()}
 
         /** Remove the admonition type in CSS */
         this.calloutManager.removeAdmonition(admonition);
+        await this.calloutManager.updateSnippetOrSheet();
 
         await this.saveSettings();
     }
