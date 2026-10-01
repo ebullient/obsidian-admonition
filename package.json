@@ -47,5 +47,8 @@
     "obsidian": "^1.13.1",
     "tslib": "^2.8.1",
     "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "moment": "2.31.0"
   }
 }
