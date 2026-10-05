@@ -42,7 +42,7 @@
     "esbuild": "^0.28.2",
     "esbuild-sass-plugin": "^3.3.1",
     "eslint-plugin-obsidianmd": "^0.4.2",
-    "sass-embedded": "^1.100.0",
+    "sass-embedded": "^1.104.0",
     "monkey-around": "^3.0.0",
     "obsidian": "^1.13.1",
     "tslib": "^2.8.1",
