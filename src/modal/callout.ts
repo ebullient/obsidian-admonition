@@ -270,7 +270,7 @@ export class CalloutSettingsModal extends Modal {
                 image.onload = () => {
                     try {
                         // Resize the image
-                        const canvas = activeDocument.createEl("canvas");
+                        const canvas = activeWindow.createEl("canvas");
                         const max_size = 24;
                         let width = image.width;
                         let height = image.height;
@@ -297,9 +297,14 @@ export class CalloutSettingsModal extends Modal {
                             type: "image",
                         };
                         void this.display();
-                    } catch {
+                    } catch (err) {
+                        console.error("Admonition: error parsing image", err);
                         new Notice(t9n("error.image-parse"));
                     }
+                };
+                image.onerror = (err) => {
+                    console.error("Admonition: error decoding image", err);
+                    new Notice(t9n("error.image-parse"));
                 };
                 const result = evt.target?.result;
                 if (typeof result !== "string") return;
