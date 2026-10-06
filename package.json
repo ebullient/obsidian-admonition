@@ -32,7 +32,7 @@
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
     "@fortawesome/free-brands-svg-icons": "^7.3.1",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
-    "@fortawesome/free-solid-svg-icons": "^7.2.0",
+    "@fortawesome/free-solid-svg-icons": "^7.3.1",
     "@popperjs/core": "^2.11.8",
     "@biomejs/biome": "2.5.11",
     "@primer/octicons": "^19.28.1",
