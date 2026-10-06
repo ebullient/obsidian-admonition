@@ -25,6 +25,7 @@ And more things
 ```
 
 ```ad-note
+title: note: **bold**, *italic*, `inline code`, other
 - [ ] List
 - [-] One (2022-03-29)
     - [x] Nested
