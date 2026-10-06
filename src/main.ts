@@ -332,6 +332,7 @@ ${editor.getSelection()}
                 collapse,
                 sourcePath,
                 metadata,
+                ctx,
             );
             this.renderAdmonitionContent(
                 admonitionElement,
@@ -431,6 +432,7 @@ ${editor.getSelection()}
         collapse?: string,
         source?: string,
         metadata?: string,
+        ctx?: MarkdownPostProcessorContext,
     ): HTMLElement {
         const admonition = createDiv({
             cls: `callout admonition admonition-${type} admonition-plugin ${
@@ -461,6 +463,10 @@ ${editor.getSelection()}
             }
 
             const renderer = new MarkdownRenderChild(titleEl);
+            renderer.containerEl = titleEl;
+            if (ctx && !(typeof ctx === "string")) {
+                ctx.addChild(renderer);
+            }
 
             //get markdown
             const titleInnerEl = titleEl.createDiv(
