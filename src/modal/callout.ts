@@ -209,11 +209,21 @@ export class CalloutSettingsModal extends Modal {
                     }
 
                     CalloutSettingsModal.removeValidationError(text.inputEl);
-                    const ic = this.plugin.iconManager.getIconType(v);
-                    this.icon = {
-                        name: v,
-                        type: ic,
-                    };
+
+                    if (this.icon.name !== v || !this.icon.type) {
+                        const matches = this.plugin.iconManager.getIconTypes(v);
+                        if (matches.length > 1) {
+                            CalloutSettingsModal.setValidationError(
+                                text.inputEl,
+                                t9n("error.icon-ambiguous"),
+                            );
+                            return;
+                        }
+                        this.icon = {
+                            name: v,
+                            type: matches[0],
+                        };
+                    }
 
                     const iconEl = this.admonitionPreview?.querySelector(
                         ".admonition-title-icon",
@@ -235,6 +245,12 @@ export class CalloutSettingsModal extends Modal {
 
                 modal.onSelect((item) => {
                     text.inputEl.value = item.item?.name ?? "";
+                    if (item.item?.name && item.item?.type) {
+                        this.icon = {
+                            name: item.item.name,
+                            type: item.item.type,
+                        };
+                    }
                     void validate();
                     modal.close();
                 });

@@ -71,3 +71,15 @@ text goes here
 text goes here
 ```
 
+```ad-feed
+octicons
+```
+
+```ad-rpg-test
+rpg icons
+```
+
+```ad-nonsense
+font-awesome
+```
+

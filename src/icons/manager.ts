@@ -98,6 +98,16 @@ export class IconManager {
             if (str in icons) return pack as DownloadableIconPack;
         }
     }
+    getIconTypes(str: string): IconType[] {
+        const types: IconType[] = [];
+        if (getIconIds().includes(str)) {
+            types.push("obsidian");
+        }
+        for (const [pack, icons] of Object.entries(this.DOWNLOADED)) {
+            if (str in icons) types.push(pack as DownloadableIconPack);
+        }
+        return types;
+    }
     getIconModuleName(icon: AdmonitionIconDefinition): string | undefined {
         if (icon.type && icon.type !== "image") {
             if (icon.type === "obsidian") return "Obsidian Icon";
@@ -126,8 +136,14 @@ export class IconManager {
                 ? this.DOWNLOADED[packType]?.[icon.name]
                 : undefined;
         if (svgString) {
+            const withNamespace = /\sxmlns\s*=/.test(svgString)
+                ? svgString
+                : svgString.replace(
+                      "<svg",
+                      '<svg xmlns="http://www.w3.org/2000/svg"',
+                  );
             const parsed = new DOMParser().parseFromString(
-                svgString,
+                withNamespace,
                 "image/svg+xml",
             );
             return parsed.documentElement;

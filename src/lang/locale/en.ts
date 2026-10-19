@@ -119,6 +119,8 @@ export default {
     "error.type-css": "Types must be a valid CSS selector.",
     "error.icon-invalid": "Invalid icon name.",
     "error.icon-empty": "Icon cannot be empty.",
+    "error.icon-ambiguous":
+        "This icon name exists in more than one pack. Choose it from the icon list instead of typing it.",
     "error.image-parse": "There was an error parsing the image.",
     "error.no-match": "No match found",
     "error.admonition-type-missing": "No admonition type by that name exists.",
