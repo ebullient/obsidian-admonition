@@ -36,7 +36,7 @@
     "@popperjs/core": "^2.11.8",
     "@biomejs/biome": "2.5.13",
     "@primer/octicons": "^19.28.1",
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.2",
     "@typescript-eslint/parser": "^8.70.0",
     "auto-changelog": "^2.6.1",
     "esbuild": "^0.28.2",
