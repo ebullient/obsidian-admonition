@@ -38,7 +38,7 @@
     "@primer/octicons": "^19.40.0",
     "@types/node": "^26.6.2",
     "@typescript-eslint/parser": "^8.71.2",
-    "auto-changelog": "^2.6.1",
+    "auto-changelog": "^2.7.0",
     "esbuild": "^0.28.2",
     "esbuild-sass-plugin": "^3.3.1",
     "eslint-plugin-obsidianmd": "^0.4.2",
