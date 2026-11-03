@@ -207,8 +207,8 @@
     display: grid;
     grid-template-columns: 1fr auto;
     grid-template-rows: 1fr 1fr;
-    grid-template-areas: "text image"
-        "inv inv";
+    /* biome-ignore lint/correctness/noInvalidGridAreas: false positive, both rows have 2 cells */
+    grid-template-areas: "text image" "inv inv";
   }
 
   input {
@@ -269,7 +269,9 @@
   }
 }
 
-.suggestion-container > .suggestion > .suggestion-item.admonition-suggester-item {
+.suggestion-container
+  > .suggestion
+  > .suggestion-item.admonition-suggester-item {
   color: var(--callout-color);
 
   &.is-selected {
@@ -299,7 +301,7 @@
 
 .theme-dark {
   .admonition-color-settings {
-    input[type=color]:disabled {
+    input[type="color"]:disabled {
       opacity: 1;
       cursor: not-allowed;
     }
@@ -368,7 +370,6 @@
     color: var(--text-error);
   }
 }
-
 
 .is-live-preview .admonition-content ul,
 .is-live-preview .admonition-content ol {
